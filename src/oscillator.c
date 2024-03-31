@@ -41,6 +41,10 @@ void setFrequency(Oscillator *o, float frequency) {
   o->stepSize = frequency / SAMPLE_RATE * WAVE_TABLE_SIZE;
 }
 
+void setVolume(Oscillator *o, float volume) {
+  o->volume = clamp(volume, 0, 1);
+}
+
 float NOTE_TO_FREQUENCY[96] = {
     16.35,   17.32,   18.35,   19.45,   20.60,   21.83,
     23.12,   24.50,   25.96,   27.50,   29.14,   30.87,

@@ -4,7 +4,7 @@
 #include "oscillator.h"
 #include "track.h"
 
-#define TRACKS 1
+#define TRACKS 2
 
 typedef struct {
   // The number of the current sample being played
@@ -32,6 +32,6 @@ typedef struct {
 
 Sequencer *newSequencer(int bpm, int subdivisions);
 void setTrack(Sequencer *s, int index, Track *t, Oscillator *o);
-float getNextSampleForChannel(Sequencer *s, int channel);
+float getNextSampleForChannel(Sequencer *s);
 
 #endif

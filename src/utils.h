@@ -7,4 +7,6 @@ extern const int SAMPLE_RATE;
 // A 0-255 integer
 typedef unsigned char byte;
 
+float clamp(float value, float min, float max);
+
 #endif

@@ -9,14 +9,14 @@ Sequencer sequencer;
 
 void callback(void *userdata, Uint8 *stream, int len) {
   for (int i = 0; i < len/sizeof(float); i++) {
-    ((float*)stream)[i] = getNextSampleForChannel(&sequencer, 0);
+    ((float*)stream)[i] = getNextSampleForChannel(&sequencer);
   }
 }
 
 int init() {
   if (0!=SDL_Init(SDL_INIT_AUDIO | SDL_INIT_EVENTS)) return 1;
   
-  char* rawTrack[16] = {
+  char* rawTrackOne[16] = {
     "C-405---", 
     "...", 
     "...", 
@@ -34,11 +34,32 @@ int init() {
     "C-505---", 
     "..."};
 
-  Track * track = fromRawTrack(rawTrack, 16);
-  Oscillator *oscillator = newOscillator(0);
+  char* rawTrackTwo[16] = {
+    "C-205---", 
+    "...", 
+    "C-305---",
+    "...", 
+    "C-205---", 
+    "...", 
+    "C-305---",
+    "...",
+    "C-205---", 
+    "...", 
+    "C-305---",
+    "...",
+    "C-205---", 
+    "...", 
+    "C-305---",
+    "..."};
+
+  Track * trackOne = fromRawTrack(rawTrackOne, 16);
+  Track * trackTwo = fromRawTrack(rawTrackTwo, 16);
+  Oscillator *oscillatorOne = newOscillator(0);
+  Oscillator *oscillatorTwo = newOscillator(0);
   
   sequencer = *newSequencer(100, 4);
-  setTrack(&sequencer, 0, track, oscillator);
+  setTrack(&sequencer, 0, trackOne, oscillatorTwo);
+  setTrack(&sequencer, 1, trackTwo, oscillatorOne);
 
   return 0;
 }

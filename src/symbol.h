@@ -1,14 +1,16 @@
 #ifndef SYMBOL_H
 #define SYMBOL_H
 
+#include "utils.h"
+
 typedef struct {
   int type;
   int value;
 } Effect;
 
 typedef struct {
-  unsigned char note;
-  unsigned char volume;
+  byte note;
+  byte volume;
   Effect effect;
 } Symbol;
 

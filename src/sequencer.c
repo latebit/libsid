@@ -30,17 +30,22 @@ void freeSequencer(Sequencer *s) {
   free(s);
 }
 
-float getNextSampleForChannel(Sequencer *s, int channel) {
+float getNextSampleForChannel(Sequencer *s) {
   int shouldMoveToNextNote = s->currentSample % s->samplesPerBeat == 0;
+  float result = 0;
 
-  if (shouldMoveToNextNote) {
-      s->currentNote[channel] = (s->currentNote[channel] + 1) % s->tracks[channel]->length;
-      Symbol sym = s->tracks[channel]->notes[s->currentNote[channel]];
-      setFrequency(s->oscillators[channel], NOTE_TO_FREQUENCY[sym.note]);
-  }
+    for (int channel = 0; channel < TRACKS; channel ++) {
+      if (shouldMoveToNextNote) {
+          s->currentNote[channel] = (s->currentNote[channel] + 1) % s->tracks[channel]->length;
+          Symbol sym = s->tracks[channel]->notes[s->currentNote[channel]];
+          setFrequency(s->oscillators[channel], NOTE_TO_FREQUENCY[sym.note]);
+          setVolume(s->oscillators[channel], sym.volume/16.0);
+      }
+      result += getNextSample(s->oscillators[channel]);
+    }
 
   // TODO: this should be wrapped by the minimum common multiple of the track lengths
   s->currentSample = (s->currentSample + 1) % (s->samplesPerBeat * s->tracks[0]->length);
 
-  return getNextSample(s->oscillators[channel]);
+  return result / TRACKS;
 }
