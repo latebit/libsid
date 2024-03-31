@@ -1,4 +1,10 @@
+#include <assert.h>
+#include <string.h>
 #include "symbol.h"
+
+const Symbol NULL_SYMBOL = {0, 0, {0, 0}};
+const char NULL_CHAR = '-';
+const char REPEAT_CHAR = '.';
 
 int hexToInt(char hexChar) {
   if (hexChar >= '0' && hexChar <= '9') {
@@ -14,6 +20,18 @@ int hexToInt(char hexChar) {
 int charToInt(char c) { return c - '0'; }
 
 Symbol fromString(char * str) {
+  // Symbol has the correct length
+  assert(strlen(str) == 8);
+
+  // Note is a valid A-G note
+  assert(str[0] >= 'A' && str[0] <= 'G');
+  // Modifier is #, b, or - (for nothing)
+  assert(str[1] == '#' || str[1] == 'b' || str[1] == '-');
+  // Octave is in the range supported by MIDI
+  assert(str[2] >= '0' && str[2] <= '9');
+  // Volume is a valid hex character
+  assert(str[4] >= '0' && str[4] <= 'F');
+  
   unsigned char note = 0;
   unsigned char volume = 0;
   Effect effect = {0, 0};

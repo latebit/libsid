@@ -15,4 +15,8 @@ typedef struct {
 // Creates a Symbol from a tracker entry
 Symbol fromString(char *str);
 
+extern const Symbol NULL_SYMBOL;
+extern const char NULL_CHAR;
+extern const char REPEAT_CHAR;
+
 #endif
