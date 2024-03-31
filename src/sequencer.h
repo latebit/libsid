@@ -4,7 +4,7 @@
 #include "oscillator.h"
 #include "track.h"
 
-#define TRACKS 2
+#define TRACKS 3
 
 typedef struct {
   // The number of the current sample being played

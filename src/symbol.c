@@ -23,12 +23,16 @@ Symbol fromString(char * str) {
   // Symbol has the correct length
   assert(strlen(str) == 8);
 
+  if (strcmp(str, "--------") == 0) {
+    return NULL_SYMBOL;
+  }
+
   // Note is a valid A-G note
   assert(str[0] >= 'A' && str[0] <= 'G');
   // Modifier is #, b, or - (for nothing)
   assert(str[1] == '#' || str[1] == 'b' || str[1] == '-');
   // Octave is in the range supported by MIDI
-  assert(str[2] >= '0' && str[2] <= '9');
+  assert(str[2] >= '0' && str[2] <= '7');
   // Volume is a valid hex character
   assert(str[4] >= '0' && str[4] <= 'F');
   

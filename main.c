@@ -20,51 +20,73 @@ int init(void) {
   if (0!=SDL_Init(SDL_INIT_AUDIO | SDL_INIT_EVENTS)) return 1;
   
   char* rawTrackOne[16] = {
-    "C-405---", 
+    "C-400---", 
     "...", 
     "...", 
     "...", 
-    "E-405---", 
+    "E-400---", 
     "...", 
-    "G-401---", 
+    "G-400---", 
     "...", 
-    "E-405---", 
+    "E-400---", 
     "...", 
-    "G-401---", 
+    "G-400---", 
     "...", 
-    "B-407---", 
+    "B-400---", 
     "...", 
-    "C-505---", 
+    "C-500---", 
     "..."};
 
   char* rawTrackTwo[16] = {
-    "C-202---", 
+    "C-200---", 
     "...", 
-    "C-302---",
+    "C-300---",
     "...", 
-    "C-202---", 
+    "C-200---", 
     "...", 
-    "C-302---",
+    "C-300---",
     "...",
-    "C-202---", 
+    "C-200---", 
     "...", 
-    "C-302---",
+    "C-300---",
     "...",
-    "C-202---", 
+    "C-200---", 
     "...", 
-    "C-302---",
+    "C-300---",
     "..."};
+
+  char* rawTrackThree[16] = {
+    "C-102---", 
+    "--------", 
+    "--------",
+    "--------", 
+    "B-702---", 
+    "--------", 
+    "--------",
+    "--------",
+    "C-102---", 
+    "--------", 
+    "--------",
+    "--------",
+    "C-102---", 
+    "--------", 
+    "--------",
+    "--------"};
 
   Track * trackOne = fromRawTrack(rawTrackOne, 16);
   Track * trackTwo = fromRawTrack(rawTrackTwo, 16);
+  Track * trackThree = fromRawTrack(rawTrackThree, 16);
   Oscillator *oscillatorOne = newOscillator(0);
   Oscillator *oscillatorTwo = newOscillator(0);
+  Oscillator *oscillatorThree = newOscillator(0);
   setWave(oscillatorOne, TRIANGLE);
   setWave(oscillatorTwo, SAWTOOTH);
+  setWave(oscillatorThree, NOISE);
   
   sequencer = *newSequencer(100, 4);
   setTrack(&sequencer, 0, trackOne, oscillatorOne);
   setTrack(&sequencer, 1, trackTwo, oscillatorTwo);
+  setTrack(&sequencer, 2, trackThree, oscillatorThree);
 
   return 0;
 }
