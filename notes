@@ -1,0 +1,30 @@
+You can have multiple tracks running concurrently by summing their waves. You need to make sure nothing clips if you don't want things to sound awful.
+
+---
+
+You can downsample to Uint8 to have something that sounds more like a Commodore64, however
+it still sound quite polished even with very low format. Options to crete a crunchier sound are downsampling and bitcrushing.
+
+Downsampling means to literally take a number and map it to another range. For example, you can multiply a (0,1) float32 * 127 to obtain a Uint8
+
+```
+(Uint8)((sample + 1) * 127);
+```
+
+Bitcrushing means reducing the bit depth of the signal, namely reducing the amount of values the wave can take.
+
+```
+float bitcrushSample(float sample, int bitDepth) {
+  float scale = powf(2, bitDepth - 1);
+  return roundf(sample * scale) / scale;
+}
+```
+
+The reason for using a power of 2 in bitcrushing is related to how digital audio is represented. In digital audio, the bit depth refers to the number of bits you have to represent each sample. For example, if you have a bit depth of 8 bits, you can represent 256 different values (2^8), ranging from 0 to 255. Using a different number than a power of two would generate different note than the original one, more than just reducing the depth.
+
+---
+
+Using a lower format leads to weird distorsions (so that you cannot really sum waves coherenlty).
+Using float32 sounds nicer and can contribute to the aesthetic of the game (Which is retro, but nor so much).
+
+One thing we can do to make the process more efficient is to use a wave table (i.e., a precomputed set of waves) so that we don't need to call sinf (or other wave functions) all the time

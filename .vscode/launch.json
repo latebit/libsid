@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+      {
+          "name": "Launch using GDB",
+          "type": "gdb",
+          "request": "launch",
+          "target": "./main", // replace with your executable
+          "cwd": "${workspaceRoot}",
+          "preLaunchTask": "build" // name of the task to run before debugging starts
+      }
+  ]
+}
