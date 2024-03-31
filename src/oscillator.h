@@ -3,8 +3,8 @@
 
 extern float NOTE_TO_FREQUENCY[96];
 
-typedef enum { TRIANGLE, SQUARE, SAWTOOTH } Wave;
-#define WAVES 3
+typedef enum { TRIANGLE, SQUARE, SAWTOOTH, NOISE } Wave;
+#define WAVES 4
 
 typedef struct {
   float currentStep;

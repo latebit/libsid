@@ -32,6 +32,11 @@ void initialize(void) {
   for (int i = 0; i < BUFFER_SIZE; i++) {
     waveTable[SAWTOOTH][i] = 2.0f * ((float)i / BUFFER_SIZE) - 1.0f;
   }
+
+  // Noise wave
+  for (int i = 0; i < BUFFER_SIZE; i++) {
+    waveTable[NOISE][i] = 2.0f * (rand() / (float)RAND_MAX) - 1.0f;
+  }
 }
 
 Oscillator* newOscillator(float frequency) {
