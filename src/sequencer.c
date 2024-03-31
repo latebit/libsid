@@ -11,9 +11,9 @@ Sequencer* newSequencer(int bpm, int subdivisions) {
     .bpm = bpm,
     .subdivisions = subdivisions,
     .currentNote = {0},
-    .samplesPerBeat = SAMPLE_RATE / (bpm * subdivisions) * 60,
+    .samplesPerBeat = SAMPLE_RATE / (bpm * subdivisions) * 60
   };
-  return s;;
+  return s;
 }
 
 void setTrack(Sequencer *s, int index, Track *t, Oscillator *o) {

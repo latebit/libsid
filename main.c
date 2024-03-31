@@ -7,13 +7,16 @@
 
 Sequencer sequencer;
 
-void callback(void *userdata, Uint8 *stream, int len) {
-  for (int i = 0; i < len/sizeof(float); i++) {
+void callback(void * userdata, Uint8 *stream, int len) {
+  (void)userdata;
+  int samples = len / sizeof(float);
+
+  for (int i = 0; i < samples; i++) {
     ((float*)stream)[i] = getNextSampleForChannel(&sequencer);
   }
 }
 
-int init() {
+int init(void) {
   if (0!=SDL_Init(SDL_INIT_AUDIO | SDL_INIT_EVENTS)) return 1;
   
   char* rawTrackOne[16] = {
@@ -35,31 +38,33 @@ int init() {
     "..."};
 
   char* rawTrackTwo[16] = {
-    "C-205---", 
+    "C-202---", 
     "...", 
-    "C-305---",
+    "C-302---",
     "...", 
-    "C-205---", 
+    "C-202---", 
     "...", 
-    "C-305---",
+    "C-302---",
     "...",
-    "C-205---", 
+    "C-202---", 
     "...", 
-    "C-305---",
+    "C-302---",
     "...",
-    "C-205---", 
+    "C-202---", 
     "...", 
-    "C-305---",
+    "C-302---",
     "..."};
 
   Track * trackOne = fromRawTrack(rawTrackOne, 16);
   Track * trackTwo = fromRawTrack(rawTrackTwo, 16);
   Oscillator *oscillatorOne = newOscillator(0);
   Oscillator *oscillatorTwo = newOscillator(0);
+  setWave(oscillatorOne, TRIANGLE);
+  setWave(oscillatorTwo, SAWTOOTH);
   
   sequencer = *newSequencer(100, 4);
-  setTrack(&sequencer, 0, trackOne, oscillatorTwo);
-  setTrack(&sequencer, 1, trackTwo, oscillatorOne);
+  setTrack(&sequencer, 0, trackOne, oscillatorOne);
+  setTrack(&sequencer, 1, trackTwo, oscillatorTwo);
 
   return 0;
 }

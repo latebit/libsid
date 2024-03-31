@@ -1,8 +1,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-extern const int BUFFER_SIZE;
-extern const int SAMPLE_RATE;
+#define BUFFER_SIZE 4096
+#define SAMPLE_RATE 44100
 
 // A 0-255 integer
 typedef unsigned char byte;

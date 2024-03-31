@@ -1,28 +1,30 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-      {
-          "label": "build",
-          "type": "shell",
-          "command": "clang",
-          "args": [
-              "-g",
-              "${workspaceFolder}/main.c",
-              "${workspaceFolder}/src/utils.c",
-              "${workspaceFolder}/src/oscillator.c",
-              "${workspaceFolder}/src/symbol.c",
-              "${workspaceFolder}/src/track.c",
-              "${workspaceFolder}/src/sequencer.c",
-              "-Wall",
-              "-lm",
-              "-lSDL2",
-              "-o",
-              "${workspaceFolder}/main"
-          ],
-          "group": {
-              "kind": "build",
-              "isDefault": true
-          }
-      }
-  ]
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "clang",
+            "args": [
+                "-g",
+                "${workspaceFolder}/main.c",
+                "${workspaceFolder}/src/utils.c",
+                "${workspaceFolder}/src/oscillator.c",
+                "${workspaceFolder}/src/symbol.c",
+                "${workspaceFolder}/src/track.c",
+                "${workspaceFolder}/src/sequencer.c",
+                "-Wall",
+                "-Wextra",
+                "-Wpedantic",
+                "-Werror",
+                "-lSDL2",
+                "-o",
+                "${workspaceFolder}/main"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
 }

@@ -1,15 +1,36 @@
-#include <math.h>
 #include <stdlib.h>
 
 #include "oscillator.h"
 #include "utils.h"
 
-#define WAVE_TABLE_SIZE 4096
-float waveTable[WAVE_TABLE_SIZE];
+const int WAVE_TABLE_SIZE = BUFFER_SIZE;
+float waveTable[WAVES][BUFFER_SIZE];
 
 void initialize(void) {
+  // Sine wave
   for (int i = 0; i < WAVE_TABLE_SIZE; i++) {
-    waveTable[i] = sinf(2 * M_PI * i / (float)WAVE_TABLE_SIZE);
+    float x = (float)i / WAVE_TABLE_SIZE;
+    if (x < 0.25f) {
+      waveTable[TRIANGLE][i] = 4.0f * x;
+    } else if (x < 0.75f) {
+      waveTable[TRIANGLE][i] = 2.0f - 4.0f * x;
+    } else {
+      waveTable[TRIANGLE][i] = 4.0f * x - 4.0f;
+    }
+  }
+
+  // Square wave
+  for (int i = 0; i < BUFFER_SIZE; i++) {
+    if (i < BUFFER_SIZE / 2) {
+      waveTable[SQUARE][i] = 1.0f;
+    } else {
+      waveTable[SQUARE][i] = -1.0f;
+    }
+  }
+
+  // Sawtooth wave
+  for (int i = 0; i < BUFFER_SIZE; i++) {
+    waveTable[SAWTOOTH][i] = 2.0f * ((float)i / BUFFER_SIZE) - 1.0f;
   }
 }
 
@@ -23,7 +44,8 @@ Oscillator* newOscillator(float frequency) {
   *o = (Oscillator) {
     .currentStep = 0,
     .stepSize = frequency / SAMPLE_RATE * WAVE_TABLE_SIZE,
-    .volume = 0.5
+    .volume = 0.5,
+    .wave = TRIANGLE
   };
 
   return o;
@@ -31,10 +53,10 @@ Oscillator* newOscillator(float frequency) {
 
 float getNextSample(Oscillator *o) {
   o->currentStep += o->stepSize;
-  if (o->currentStep >= WAVE_TABLE_SIZE) {
-    o->currentStep -= WAVE_TABLE_SIZE;
+  if (o->currentStep >= BUFFER_SIZE) {
+    o->currentStep -= BUFFER_SIZE;
   }
-  return waveTable[(int)o->currentStep] * o->volume;
+  return waveTable[o->wave][(int)o->currentStep] * o->volume;
 }
 
 void setFrequency(Oscillator *o, float frequency) {
@@ -43,6 +65,10 @@ void setFrequency(Oscillator *o, float frequency) {
 
 void setVolume(Oscillator *o, float volume) {
   o->volume = clamp(volume, 0, 1);
+}
+
+void setWave(Oscillator *oscillator, Wave wave) {
+  oscillator->wave = wave;
 }
 
 float NOTE_TO_FREQUENCY[96] = {
