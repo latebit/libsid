@@ -8,8 +8,11 @@
           "args": [
               "-g",
               "${workspaceFolder}/main.c",
-              "${workspaceFolder}/oscillator.c",
-              "${workspaceFolder}/symbol.c",
+              "${workspaceFolder}/src/utils.c",
+              "${workspaceFolder}/src/oscillator.c",
+              "${workspaceFolder}/src/symbol.c",
+              "${workspaceFolder}/src/track.c",
+              "${workspaceFolder}/src/sequencer.c",
               "-Wall",
               "-lm",
               "-lSDL2",

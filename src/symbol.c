@@ -1,10 +1,10 @@
+#include "symbol.h"
+
 #include <assert.h>
 #include <string.h>
-#include "symbol.h"
 
 const Symbol NULL_SYMBOL = {0, 0, {0, 0}};
 const char NULL_CHAR = '-';
-const char REPEAT_CHAR = '.';
 
 int hexToInt(char hexChar) {
   if (hexChar >= '0' && hexChar <= '9') {

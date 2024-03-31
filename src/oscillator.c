@@ -1,7 +1,8 @@
-#include "oscillator.h"
-#include "math.h"
+#include <math.h>
+#include <stdlib.h>
 
-const int SAMPLE_RATE = 44100;
+#include "oscillator.h"
+#include "utils.h"
 
 #define WAVE_TABLE_SIZE 4096
 float waveTable[WAVE_TABLE_SIZE];
@@ -12,18 +13,20 @@ void initialize(void) {
   }
 }
 
-Oscillator newOscillator(float frequency) {
+Oscillator* newOscillator(float frequency) {
   static int initialized = 0;
   if (!initialized) {
     initialize();
     initialized = 1;
   }
-
-  return (Oscillator) {
+  Oscillator * o = malloc(sizeof(Oscillator));
+  *o = (Oscillator) {
     .currentStep = 0,
     .stepSize = frequency / SAMPLE_RATE * WAVE_TABLE_SIZE,
     .volume = 0.5
   };
+
+  return o;
 }
 
 float getNextSample(Oscillator *o) {
