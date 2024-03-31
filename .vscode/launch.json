@@ -1,13 +1,16 @@
 {
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
-      {
-          "name": "Launch using GDB",
-          "type": "gdb",
-          "request": "launch",
-          "target": "./main", // replace with your executable
-          "cwd": "${workspaceRoot}",
-          "preLaunchTask": "build" // name of the task to run before debugging starts
-      }
+    {
+      "name": "Launch using GDB",
+      "type": "gdb",
+      "request": "launch",
+      "target": "build/sid",
+      "cwd": "${workspaceRoot}",
+      "preLaunchTask": "CMake: build"
+    }
   ]
 }
