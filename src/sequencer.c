@@ -46,7 +46,7 @@ float getNextSampleForChannel(Sequencer *s) {
 
         // Set the frequency and volume of the oscillator
         if (!isSameSymbol(newSymbol, oldSymbol)) {
-          setFrequency(s->oscillators[channel], NOTE_TO_FREQUENCY[newSymbol.note]);
+          setNote(s->oscillators[channel], newSymbol.note);
           setVolume(s->oscillators[channel], newSymbol.volume/16.0);
         }
       }

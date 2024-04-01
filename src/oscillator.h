@@ -1,7 +1,7 @@
 #ifndef OSCILLATOR_H
 #define OSCILLATOR_H
 
-extern float NOTE_TO_FREQUENCY[96];
+#include "utils.h"
 
 typedef enum { TRIANGLE, SQUARE, SAWTOOTH, NOISE } Wave;
 #define WAVES 4
@@ -15,7 +15,7 @@ typedef struct {
 
 Oscillator *newOscillator(float frequency);
 float getNextSample(Oscillator *oscillator);
-void setFrequency(Oscillator *oscillator, float frequency);
+void setNote(Oscillator *oscillator, byte note);
 void setVolume(Oscillator *oscillator, float volume);
 void setWave(Oscillator *oscillator, Wave wave);
 
