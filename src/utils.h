@@ -6,6 +6,7 @@
 
 // A 0-255 integer
 typedef unsigned char byte;
+typedef byte hex;
 
 float clamp(float value, float min, float max);
 

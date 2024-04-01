@@ -36,21 +36,26 @@ float getNextSampleForChannel(Sequencer *s) {
   float result = 0;
 
     for (int channel = 0; channel < TRACKS; channel ++) {
+      Symbol current = s->tracks[channel]->notes[s->currentNote[channel]];
+      
       if (shouldMoveToNextNote) {
-        // Old Symbol
-        Symbol oldSymbol = s->tracks[channel]->notes[s->currentNote[channel]];
         // Move the note index one step forward
         s->currentNote[channel] = (s->currentNote[channel] + 1) % s->tracks[channel]->length;
         // Retrieve the symbol for the current note
-        Symbol newSymbol = s->tracks[channel]->notes[s->currentNote[channel]];
+        Symbol new = s->tracks[channel]->notes[s->currentNote[channel]];
 
         // Set the frequency and volume of the oscillator
-        if (!isSameSymbol(newSymbol, oldSymbol)) {
-          setNote(s->oscillators[channel], newSymbol.note);
-          setVolume(s->oscillators[channel], newSymbol.volume/16.0);
+        if (!isSameSymbol(new, current)) {
+          setNote(s->oscillators[channel], new.note);
+          setVolume(s->oscillators[channel], new.volume/16.0);
+          setEffect(s->oscillators[channel], new.effect);
+          setWave(s->oscillators[channel], new.wave);
         }
+
+        current = new;
       }
-      result += getNextSample(s->oscillators[channel]);
+
+      result += oscillate(s->oscillators[channel]);
     }
 
   // TODO: this should be wrapped by the minimum common multiple of the track lengths

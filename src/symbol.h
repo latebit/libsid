@@ -1,17 +1,14 @@
 #ifndef SYMBOL_H
 #define SYMBOL_H
 
+#include "oscillator.h"
 #include "utils.h"
 
 typedef struct {
-  int type;
-  int value;
-} Effect;
-
-typedef struct {
   byte note;
-  byte volume;
-  Effect effect;
+  hex volume;
+  WaveType wave;
+  EffectType effect;
   long unsigned int id;
 } Symbol;
 

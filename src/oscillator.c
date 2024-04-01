@@ -76,18 +76,10 @@ Oscillator* newOscillator(float frequency) {
     .currentStep = 0,
     .stepSize = frequency / SAMPLE_RATE * WAVE_TABLE_SIZE,
     .volume = 0.5,
-    .wave = TRIANGLE
+    .waveType = TRIANGLE
   };
 
   return o;
-}
-
-float getNextSample(Oscillator *o) {
-  o->currentStep += o->stepSize;
-  if (o->currentStep >= BUFFER_SIZE) {
-    o->currentStep -= BUFFER_SIZE;
-  }
-  return waveTable[o->wave][(int)o->currentStep] * o->volume;
 }
 
 void setFrequency(Oscillator *o, float frequency) {
@@ -103,6 +95,55 @@ void setVolume(Oscillator *o, float volume) {
   o->volume = clamp(volume, 0, 1);
 }
 
-void setWave(Oscillator *oscillator, Wave wave) {
-  oscillator->wave = wave;
+void setWave(Oscillator *oscillator, WaveType wave) {
+  oscillator->waveType = wave;
+}
+
+void setEffect(Oscillator *oscillator, EffectType effect) {
+  switch (effect) {
+    case DROP:
+      oscillator->effect = (Effect) {effect, 0.9999, 1};
+      return;
+    case SLIDE:
+      oscillator->effect = (Effect) {effect, 1.00005, 1};
+      return;
+    case FADEIN:
+      oscillator->effect = (Effect) {effect, 0.0001, 0};
+      return;
+    case FADEOUT:
+      oscillator->effect = (Effect) {effect, -0.0001, 1};
+      return;
+    default:
+    case NONE:
+      oscillator->effect = (Effect) {effect, 0, 0};
+      return;
+  }
+}
+
+float processFrequency(Effect *effect, float step) {
+  if (effect->type == DROP || effect->type == SLIDE) {
+    step *= effect->previous;
+    effect->previous *= effect->amount;
+  }
+  return step;
+}
+
+float processVolume(Effect *effect, float sample) {
+  if (effect->type == FADEIN || effect->type == FADEOUT) {
+    sample *= effect->previous;
+    effect->previous = clamp(effect->previous + effect->amount, 0, 1);
+  }
+  return sample;
+}
+
+float oscillate(Oscillator *o) {
+  o->currentStep += processFrequency(&o->effect, o->stepSize);
+
+  if (o->currentStep >= BUFFER_SIZE) {
+    o->currentStep -= BUFFER_SIZE;
+  }
+
+  float sample = waveTable[o->waveType][(int)o->currentStep];
+  // return sample * o->volume; 
+  return processVolume(&o->effect, sample) * o->volume; 
 }

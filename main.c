@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include "src/oscillator.h"
 #include "src/sequencer.h"
 #include "src/track.h"
@@ -20,58 +21,58 @@ int init(void) {
   if (0!=SDL_Init(SDL_INIT_AUDIO | SDL_INIT_EVENTS)) return 1;
   
   char* rawTrackOne[16] = {
-    "C-405---", 
+    "C-4084", 
     "...", 
     "...", 
     "...", 
-    "E-405---", 
+    "E-4084", 
     "...", 
-    "G-405---", 
+    "G-4084", 
     "...", 
-    "E-405---", 
+    "E-4084", 
     "...", 
-    "G-405---", 
+    "G-4084", 
     "...", 
-    "B-405---", 
+    "B-4084", 
     "...", 
-    "C-505---", 
+    "C-5084", 
     "..."};
 
   char* rawTrackTwo[16] = {
-    "C-202---", 
+    "C-200-", 
     "...", 
-    "C-302---",
+    "C-300-",
     "...", 
-    "C-202---", 
+    "C-200-", 
     "...", 
-    "C-302---",
+    "C-300-",
     "...",
-    "C-202---", 
+    "C-200-", 
     "...", 
-    "C-302---",
+    "C-300-",
     "...",
-    "C-202---", 
+    "C-200-", 
     "...", 
-    "C-302---",
+    "C-300-",
     "..."};
 
   char* rawTrackThree[16] = {
-    "C-102---", 
-    "--------", 
-    "--------",
-    "--------", 
-    "B-702---", 
-    "--------", 
-    "--------",
-    "--------",
-    "C-102---", 
-    "--------", 
-    "--------",
-    "--------",
-    "C-102---", 
-    "--------", 
-    "--------",
-    "--------"};
+    "C-1001", 
+    "------", 
+    "------",
+    "------", 
+    "C-4300", 
+    "------", 
+    "------",
+    "------",
+    "C-1001", 
+    "------", 
+    "C-1001",
+    "------",
+    "C-4300", 
+    "------", 
+    "------",
+    "------",};
 
   Track * trackOne = fromRawTrack(rawTrackOne, 16);
   Track * trackTwo = fromRawTrack(rawTrackTwo, 16);
@@ -79,11 +80,8 @@ int init(void) {
   Oscillator *oscillatorOne = newOscillator(0);
   Oscillator *oscillatorTwo = newOscillator(0);
   Oscillator *oscillatorThree = newOscillator(0);
-  setWave(oscillatorOne, TRIANGLE);
-  setWave(oscillatorTwo, SAWTOOTH);
-  setWave(oscillatorThree, NOISE);
   
-  sequencer = *newSequencer(100, 4);
+  sequencer = *newSequencer(90, 4);
   setTrack(&sequencer, 0, trackOne, oscillatorOne);
   setTrack(&sequencer, 1, trackTwo, oscillatorTwo);
   setTrack(&sequencer, 2, trackThree, oscillatorThree);
@@ -104,6 +102,7 @@ int main(void) {
 
   if (0!=SDL_OpenAudio(&spec, NULL)) return 1;
   
+  sleep(1);
   SDL_PauseAudio(0);
 
   while (1) {
