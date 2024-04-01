@@ -3,8 +3,9 @@
 #include <assert.h>
 #include <string.h>
 
-const Symbol NULL_SYMBOL = {0, 0, {0, 0}};
+const Symbol NULL_SYMBOL = {0, 0, {0, 0}, -1};
 const char NULL_CHAR = '-';
+int lastId = 0;
 
 int hexToInt(char hexChar) {
   if (hexChar >= '0' && hexChar <= '9') {
@@ -58,5 +59,13 @@ Symbol fromString(char * str) {
   note = (note % 12) + (12 * charToInt(str[2]));
   volume = hexToInt(str[4]);
 
-  return (Symbol){note, volume, effect};
+  return (Symbol){note, volume, effect, lastId++};
+}
+
+int isNullSymbol(Symbol symbol) {
+  return symbol.id == -1;
+}
+
+int isSameSymbol(Symbol a, Symbol b) {
+  return a.id == b.id;
 }

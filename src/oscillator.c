@@ -66,6 +66,7 @@ float getNextSample(Oscillator *o) {
 
 void setFrequency(Oscillator *o, float frequency) {
   o->stepSize = frequency / SAMPLE_RATE * WAVE_TABLE_SIZE;
+  o->currentStep = 0;
 }
 
 void setVolume(Oscillator *o, float volume) {

@@ -1,4 +1,5 @@
 #include "sequencer.h"
+#include "symbol.h"
 #include "track.h"
 #include "oscillator.h"
 #include "utils.h"
@@ -36,10 +37,18 @@ float getNextSampleForChannel(Sequencer *s) {
 
     for (int channel = 0; channel < TRACKS; channel ++) {
       if (shouldMoveToNextNote) {
-          s->currentNote[channel] = (s->currentNote[channel] + 1) % s->tracks[channel]->length;
-          Symbol sym = s->tracks[channel]->notes[s->currentNote[channel]];
-          setFrequency(s->oscillators[channel], NOTE_TO_FREQUENCY[sym.note]);
-          setVolume(s->oscillators[channel], sym.volume/16.0);
+        // Old Symbol
+        Symbol oldSymbol = s->tracks[channel]->notes[s->currentNote[channel]];
+        // Move the note index one step forward
+        s->currentNote[channel] = (s->currentNote[channel] + 1) % s->tracks[channel]->length;
+        // Retrieve the symbol for the current note
+        Symbol newSymbol = s->tracks[channel]->notes[s->currentNote[channel]];
+
+        // Set the frequency and volume of the oscillator
+        if (!isSameSymbol(newSymbol, oldSymbol)) {
+          setFrequency(s->oscillators[channel], NOTE_TO_FREQUENCY[newSymbol.note]);
+          setVolume(s->oscillators[channel], newSymbol.volume/16.0);
+        }
       }
       result += getNextSample(s->oscillators[channel]);
     }

@@ -5,14 +5,6 @@
 #include "utils.h"
 
 typedef struct {
-  byte attack;
-  byte decay;
-  byte sustain;
-  byte release;
-} Modulator;
-
-typedef struct {
-  Modulator modulator;
   Symbol *notes;
   byte length;
 } Track;
