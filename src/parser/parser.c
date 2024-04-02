@@ -4,38 +4,38 @@
 #include <stdlib.h>
 #include <string.h>
 
-Composition *fromFile(char *filename) {
+Tune *fromFile(char *filename) {
   FILE *file = fopen(filename, "r");
   if (!file) {
     return NULL;
   }
 
-  Composition *composition = malloc(sizeof(Composition));
+  Tune *tune = malloc(sizeof(Tune));
 
   // read the first line of the file
-  fscanf(file, "%d\n", &composition->bpm);
-  fscanf(file, "%d\n", &composition->subdivisions);
-  fscanf(file, "%d\n", &composition->bars);
-  fscanf(file, "%d\n", &composition->tracksCount);
+  fscanf(file, "%d\n", &tune->bpm);
+  fscanf(file, "%d\n", &tune->subdivisions);
+  fscanf(file, "%d\n", &tune->trackSize);
+  fscanf(file, "%d\n", &tune->tracksCount);
 
   // allocate an array of array of strings
-  composition->tracks = malloc(sizeof(char **) * composition->tracksCount);
-  for (int i = 0; i < composition->tracksCount; i++) {
-    composition->tracks[i] = malloc(sizeof(char *) * composition->bars);
+  tune->tracks = malloc(sizeof(char **) * tune->tracksCount);
+  for (int i = 0; i < tune->tracksCount; i++) {
+    tune->tracks[i] = malloc(sizeof(char *) * tune->trackSize);
   }
 
   // read the rest of the file
-  for (int i = 0; i < composition->bars; i++) {
+  for (int i = 0; i < tune->trackSize; i++) {
     char *line = NULL;
     size_t len = 0;
 
     assert(getline(&line, &len, file) != -1);
 
     char *symbol = strtok(line, " \t\n\r\f\v");
-    for (int j = 0; j < composition->tracksCount; j++) {
+    for (int j = 0; j < tune->tracksCount; j++) {
       assert(strlen(symbol) > 0);
-      composition->tracks[j][i] = (char *)malloc(strlen(symbol) + 1);
-      strcpy(composition->tracks[j][i], symbol);
+      tune->tracks[j][i] = (char *)malloc(strlen(symbol) + 1);
+      strcpy(tune->tracks[j][i], symbol);
       symbol = strtok(NULL, " \t\n\r\f\v");
     }
 
@@ -43,12 +43,12 @@ Composition *fromFile(char *filename) {
   }
 
   fclose(file);
-  return composition;
+  return tune;
 }
 
-void freeComposition(Composition *c) {
+void freeTune(Tune *c) {
   for (int i = 0; i < c->tracksCount; i++) {
-    for (int j = 0; j < c->bars; j++) {
+    for (int j = 0; j < c->trackSize; j++) {
       free(c->tracks[i][j]);
     }
     free(c->tracks[i]); // Free each array of strings

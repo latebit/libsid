@@ -6,12 +6,12 @@ typedef char *string;
 typedef struct {
   int bpm;
   int subdivisions;
-  int bars;
+  int trackSize;
   int tracksCount;
   string **tracks;
-} Composition;
+} Tune;
 
-Composition *fromFile(char *filename);
-void freeComposition(Composition *c);
+Tune *fromFile(char *filename);
+void freeTune(Tune *c);
 
 #endif

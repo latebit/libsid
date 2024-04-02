@@ -23,15 +23,15 @@ void callback(void *userdata, Uint8 *stream, int len) {
 void load(char *filename) {
   assert(access(filename, F_OK) == 0);
 
-  Composition *composition = fromFile(filename);
-  sequencer = *newSequencer(composition->bpm, composition->subdivisions);
+  Tune *tune = fromFile(filename);
+  sequencer = *newSequencer(tune->bpm, tune->subdivisions);
 
-  for (int i = 0; i < composition->tracksCount; i++) {
-    Track *track = fromRawTrack(composition->tracks[i], composition->bars);
+  for (int i = 0; i < tune->tracksCount; i++) {
+    Track *track = fromRawTrack(tune->tracks[i], tune->trackSize);
     Oscillator *oscillator = newOscillator(0);
     setTrack(&sequencer, i, track, oscillator);
   }
-  freeComposition(composition);
+  freeTune(tune);
 }
 
 int main(int argc, char *argv[]) {

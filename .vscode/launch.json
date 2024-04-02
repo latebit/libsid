@@ -9,7 +9,7 @@
       "type": "gdb",
       "request": "launch",
       "target": "build/sid-cli",
-      "arguments": "fixtures/example",
+      "arguments": "examples/example",
       "cwd": "${workspaceRoot}",
       "preLaunchTask": "CMake: build"
     }
