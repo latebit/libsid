@@ -1,12 +1,14 @@
 #ifndef PARSER_H
 #define PARSER_H
 
+typedef char *string;
+
 typedef struct {
   int bpm;
   int subdivisions;
   int bars;
   int tracksCount;
-  char ***tracks;
+  string **tracks;
 } Composition;
 
 Composition *fromFile(char *filename);

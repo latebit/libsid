@@ -8,7 +8,7 @@
       "name": "Launch using GDB",
       "type": "gdb",
       "request": "launch",
-      "target": "build/sid",
+      "target": "build/sid-cli",
       "arguments": "fixtures/example",
       "cwd": "${workspaceRoot}",
       "preLaunchTask": "CMake: build"
