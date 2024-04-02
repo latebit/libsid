@@ -12,6 +12,12 @@ engine.
 
 All the specifications present and future can be found [here](./docs/).
 
+## Usage
+
+```sh
+sid-cli path-to-tune
+```
+
 ## Development
 
 This library relies on [SDL](https://www.libsdl.org/). 
