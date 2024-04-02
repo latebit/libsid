@@ -45,3 +45,13 @@ Composition *fromFile(char *filename) {
   fclose(file);
   return composition;
 }
+
+void freeComposition(Composition *c) {
+  for (int i = 0; i < c->tracksCount; i++) {
+    for (int j = 0; j < c->bars; j++) {
+      free(c->tracks[i][j]);
+    }
+    free(c->tracks[i]); // Free each array of strings
+  }
+  free(c->tracks);
+}

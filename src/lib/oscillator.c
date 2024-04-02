@@ -30,7 +30,6 @@ float NOTE_TO_FREQUENCY[96] = {
     2093,    2217.46, 2349.32, 2489.02, 2637.02, 2793.83,
     2959,    3135.96, 3322.44, 3520,    3729.31, 3951.07};
 
-
 void initialize(void) {
   // Sine wave
   for (int i = 0; i < WAVE_TABLE_SIZE; i++) {
@@ -64,20 +63,18 @@ void initialize(void) {
   }
 }
 
-Oscillator* newOscillator(float frequency) {
+Oscillator *newOscillator(float frequency) {
   static int initialized = 0;
   if (!initialized) {
     initialize();
     initialized = 1;
   }
 
-  Oscillator * o = malloc(sizeof(Oscillator));
-  *o = (Oscillator) {
-    .currentStep = 0,
-    .stepSize = frequency / SAMPLE_RATE * WAVE_TABLE_SIZE,
-    .volume = 0.5,
-    .waveType = TRIANGLE
-  };
+  Oscillator *o = malloc(sizeof(Oscillator));
+  *o = (Oscillator){.currentStep = 0,
+                    .stepSize = frequency / SAMPLE_RATE * WAVE_TABLE_SIZE,
+                    .volume = 0.5,
+                    .waveType = TRIANGLE};
 
   return o;
 }
@@ -91,9 +88,7 @@ void setNote(Oscillator *o, byte note) {
   setFrequency(o, NOTE_TO_FREQUENCY[note]);
 }
 
-void setVolume(Oscillator *o, float volume) {
-  o->volume = clamp(volume, 0, 1);
-}
+void setVolume(Oscillator *o, float volume) { o->volume = clamp(volume, 0, 1); }
 
 void setWave(Oscillator *oscillator, WaveType wave) {
   oscillator->waveType = wave;
@@ -101,22 +96,22 @@ void setWave(Oscillator *oscillator, WaveType wave) {
 
 void setEffect(Oscillator *oscillator, EffectType effect) {
   switch (effect) {
-    case DROP:
-      oscillator->effect = (Effect) {effect, 0.9999, 1};
-      return;
-    case SLIDE:
-      oscillator->effect = (Effect) {effect, 1.00005, 1};
-      return;
-    case FADEIN:
-      oscillator->effect = (Effect) {effect, 0.0001, 0};
-      return;
-    case FADEOUT:
-      oscillator->effect = (Effect) {effect, -0.0001, 1};
-      return;
-    default:
-    case NONE:
-      oscillator->effect = (Effect) {effect, 0, 0};
-      return;
+  case DROP:
+    oscillator->effect = (Effect){effect, 0.9999, 1};
+    return;
+  case SLIDE:
+    oscillator->effect = (Effect){effect, 1.00005, 1};
+    return;
+  case FADEIN:
+    oscillator->effect = (Effect){effect, 0.0001, 0};
+    return;
+  case FADEOUT:
+    oscillator->effect = (Effect){effect, -0.0001, 1};
+    return;
+  default:
+  case NONE:
+    oscillator->effect = (Effect){effect, 0, 0};
+    return;
   }
 }
 
@@ -144,6 +139,6 @@ float oscillate(Oscillator *o) {
   }
 
   float sample = waveTable[o->waveType][(int)o->currentStep];
-  // return sample * o->volume; 
-  return processVolume(&o->effect, sample) * o->volume; 
+  // return sample * o->volume;
+  return processVolume(&o->effect, sample) * o->volume;
 }

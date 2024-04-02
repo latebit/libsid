@@ -10,5 +10,6 @@ typedef struct {
 } Composition;
 
 Composition *fromFile(char *filename);
+void freeComposition(Composition *c);
 
 #endif

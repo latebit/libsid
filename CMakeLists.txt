@@ -3,8 +3,11 @@ project(sid)
 
 set(CMAKE_C_STANDARD 23)
 
-file(GLOB SRC_FILES "${CMAKE_SOURCE_DIR}/src/*.c")
-add_executable(${PROJECT_NAME} main.c ${SRC_FILES})
+file(GLOB PARSER_SRC "${CMAKE_SOURCE_DIR}/src/parser/*.c")
+file(GLOB LIB_SRC "${CMAKE_SOURCE_DIR}/src/lib/*.c")
+
+add_executable(${PROJECT_NAME} "${CMAKE_SOURCE_DIR}/src/cli/main.c" ${LIB_SRC} ${PARSER_SRC})
+
 target_link_libraries(${PROJECT_NAME} SDL2)
 
 add_custom_target(run
