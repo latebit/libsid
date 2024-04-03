@@ -28,4 +28,4 @@ Note *newRest() {
   return s;
 }
 
-void freeSymbol(Note *s) { free(s); }
+void freeNote(Note *s) { free(s); }
