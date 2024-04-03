@@ -6,7 +6,6 @@
 
 #include "../lib/oscillator.h"
 #include "../lib/sequencer.h"
-#include "../lib/track.h"
 #include "../parser/parser.h"
 
 Sequencer sequencer;
@@ -24,14 +23,12 @@ void load(char *filename) {
   assert(access(filename, F_OK) == 0);
 
   Tune *tune = fromFile(filename);
-  sequencer = *newSequencer(tune->bpm, tune->subdivisions);
+  sequencer = *newSequencer(tune->bpm, tune->ticksPerBeat);
 
   for (int i = 0; i < tune->tracksCount; i++) {
-    Track *track = fromRawTrack(tune->tracks[i], tune->trackSize);
     Oscillator *oscillator = newOscillator(0);
-    setTrack(&sequencer, i, track, oscillator);
+    setTrack(&sequencer, i, tune->tracks[i], oscillator);
   }
-  freeTune(tune);
 }
 
 int main(int argc, char *argv[]) {

@@ -1,6 +1,6 @@
 #include "sequencer.h"
+#include "note.h"
 #include "oscillator.h"
-#include "symbol.h"
 #include "track.h"
 #include "utils.h"
 #include <stdlib.h>
@@ -84,10 +84,10 @@ float getNextSampleForChannel(Sequencer *s) {
   for (int channel = 0; channel < TRACKS; channel++) {
     int newNoteIndex =
         (s->currentNote[channel] + 1) % s->tracks[channel]->length;
-    Symbol current = s->tracks[channel]->notes[s->currentNote[channel]];
-    Symbol new = s->tracks[channel]->notes[newNoteIndex];
+    Note current = s->tracks[channel]->notes[s->currentNote[channel]];
+    Note new = s->tracks[channel]->notes[newNoteIndex];
 
-    if (shouldStopEnvelope && !isSameSymbol(new, current)) {
+    if (shouldStopEnvelope && !isSameSound(new, current)) {
       stop(s->envelopes[channel]);
     }
 
@@ -95,8 +95,8 @@ float getNextSampleForChannel(Sequencer *s) {
       s->currentNote[channel] = newNoteIndex;
 
       // Set the frequency and volume of the oscillator
-      if (!isSameSymbol(new, current)) {
-        setNote(s->oscillators[channel], new.note);
+      if (!isSameSound(new, current)) {
+        setNote(s->oscillators[channel], new.pitch);
         setVolume(s->oscillators[channel], new.volume / 16.0);
         setEffect(s->oscillators[channel], new.effect);
         setWave(s->oscillators[channel], new.wave);
