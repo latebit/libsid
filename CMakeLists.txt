@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.18)
 project(sid VERSION 0.0.1 LANGUAGES C)
 
 set(CMAKE_C_STANDARD 23)
+set(CMAKE_C_FLAGS_DEBUG "-g -O0 -fno-omit-frame-pointer -gdwarf-2")
 
 file(GLOB PARSER_SRC "${CMAKE_SOURCE_DIR}/src/parser/*.c")
 list(FILTER PARSER_SRC EXCLUDE REGEX ".test.c$")

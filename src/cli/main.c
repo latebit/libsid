@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_timer.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
@@ -53,13 +54,11 @@ int main(int argc, char *argv[]) {
 
   SDL_PauseAudio(0);
 
-  while (1) {
-    SDL_Event e;
-    while (SDL_PollEvent(&e)) {
-      switch (e.type) {
-      case SDL_QUIT:
-        return 0;
-      }
+  SDL_Event e;
+  while (SDL_WaitEvent(&e)) {
+    switch (e.type) {
+    case SDL_QUIT:
+      return 0;
     }
   }
 
