@@ -139,6 +139,5 @@ float oscillate(Oscillator *o) {
   }
 
   float sample = waveTable[o->waveType][(int)o->currentStep];
-  // return sample * o->volume;
   return processVolume(&o->effect, sample) * o->volume;
 }
