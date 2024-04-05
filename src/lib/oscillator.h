@@ -25,7 +25,7 @@ typedef struct {
 Oscillator *newOscillator(float frequency);
 float oscillate(Oscillator *oscillator);
 
-void setNote(Oscillator *oscillator, byte note);
+void setPitch(Oscillator *oscillator, byte note);
 void setVolume(Oscillator *oscillator, float volume);
 void setWave(Oscillator *oscillator, WaveType wave);
 void setEffect(Oscillator *oscillator, EffectType effect);

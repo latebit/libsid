@@ -99,6 +99,7 @@ Tune *fromString(char *str) {
       }
 
       if (isEndOfTrackSymbolString(symbol)) {
+        symbol = strtok_r(NULL, "|\n", &symbolOffset);
         trackEnded[j] = true;
         continue;
       }
@@ -128,9 +129,7 @@ Tune *fromString(char *str) {
     }
 
     line = strtok_r(NULL, "\n", &lineOffset);
-    free(symbol);
   }
-  free(line);
   free(body);
 
   return tune;

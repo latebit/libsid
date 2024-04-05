@@ -1,4 +1,6 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_audio.h>
+#include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_timer.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,13 +12,17 @@
 
 Sequencer *sequencer;
 Tune *tune;
+int loaded = 0;
 
 void callback(void *userdata, Uint8 *stream, int len) {
   (void)userdata;
   int samples = len / sizeof(float);
 
-  if (!sequencer)
+  if (loaded != 5) {
+    loaded++;
+    SDL_memset(stream, 0, len);
     return;
+  }
 
   for (int i = 0; i < samples; i++) {
     ((float *)stream)[i] = getNextSampleForChannel(sequencer);
@@ -50,10 +56,8 @@ int main(int argc, char *argv[]) {
                         .samples = BUFFER_SIZE,
                         .callback = callback};
 
-  if (0 != SDL_OpenAudio(&spec, NULL))
-    return 1;
-
-  SDL_PauseAudio(0);
+  unsigned int d = SDL_OpenAudioDevice(NULL, 0, &spec, NULL, 1);
+  SDL_PauseAudioDevice(d, 0);
 
   SDL_Event e;
   while (SDL_WaitEvent(&e)) {

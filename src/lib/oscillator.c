@@ -84,7 +84,7 @@ void setFrequency(Oscillator *o, float frequency) {
   o->currentStep = 0;
 }
 
-void setNote(Oscillator *o, byte note) {
+void setPitch(Oscillator *o, byte note) {
   setFrequency(o, NOTE_TO_FREQUENCY[note]);
 }
 

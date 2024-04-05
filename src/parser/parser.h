@@ -4,5 +4,6 @@
 #include "../lib/tune.h"
 
 Tune *fromFile(char *filename);
+Tune *fromString(char *str);
 
 #endif

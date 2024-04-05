@@ -44,6 +44,7 @@ Sequencer *newSequencer(int bpm, int subdivisions) {
                    .bpm = bpm,
                    .subdivisions = subdivisions,
                    .currentNote = {0},
+                   .wrappingFactor = 1,
                    .samplesPerBeat = SAMPLE_RATE / (bpm * subdivisions) * 60};
 
   for (int i = 0; i < TRACKS; i++) {
@@ -59,11 +60,32 @@ Sequencer *newSequencer(int bpm, int subdivisions) {
   return s;
 }
 
+int gcd(int a, int b) {
+  if (b == 0)
+    return a;
+  return gcd(b, a % b);
+}
+
+int lcm(int a, int b) { return (a * b) / gcd(a, b); }
+
 void setTrack(Sequencer *s, int index, Track *t, Oscillator *o) {
   if (index >= TRACKS || index < 0)
     return;
   s->tracks[index] = t;
   s->oscillators[index] = o;
+
+  // This is used to allow the first note of each track to be executed
+  // else the first note will be skipped until there is a change note event
+  Note firstNote = get(t, 0);
+  setPitch(o, firstNote.pitch);
+  setVolume(o, firstNote.volume / 16.0);
+  setEffect(o, firstNote.effect);
+  setWave(o, firstNote.wave);
+  start(s->envelopes[index]);
+
+  // Calculate the least common multiple of the wrapping factor so that we can
+  // wrap the currentSample counter at the right time
+  s->wrappingFactor = lcm(s->wrappingFactor, t->length * s->samplesPerBeat);
 }
 
 void freeSequencer(Sequencer *s) {
@@ -104,7 +126,7 @@ float getNextSampleForChannel(Sequencer *s) {
 
       // Set the frequency and volume of the oscillator
       if (!isSameNote(new, current)) {
-        setNote(oscillator, new.pitch);
+        setPitch(oscillator, new.pitch);
         setVolume(oscillator, new.volume / 16.0);
         setEffect(oscillator, new.effect);
         setWave(oscillator, new.wave);
@@ -118,10 +140,7 @@ float getNextSampleForChannel(Sequencer *s) {
     result += oscillate(oscillator) * envelope->value;
   }
 
-  // TODO: this should be wrapped by the minimum common multiple of the track
-  // lengths
-  s->currentSample =
-      (s->currentSample + 1) % (s->samplesPerBeat * s->tracks[0]->length);
+  s->currentSample = (s->currentSample + 1) % (s->wrappingFactor);
 
   return result / TRACKS;
 }

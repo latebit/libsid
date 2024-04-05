@@ -5,6 +5,14 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Launch test using GDB",
+      "type": "gdb",
+      "request": "launch",
+      "target": "build/parser",
+      "cwd": "${workspaceRoot}",
+      "preLaunchTask": "CMake: build"
+    },
+    {
       "name": "Launch using GDB",
       "type": "gdb",
       "request": "launch",

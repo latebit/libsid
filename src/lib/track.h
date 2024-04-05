@@ -14,8 +14,8 @@ typedef struct {
 
 typedef struct {
   Note *notes;
-  byte size;
   byte length;
+  byte capacity;
 } Track;
 
 Track *newTrack(byte length);
@@ -28,6 +28,7 @@ Note newRest();
 Note newInvalid();
 bool isRest(Note symbol);
 bool isSameNote(Note a, Note b);
+bool isEqualNote(Note a, Note b);
 bool isInvalid(Note symbol);
 
 #endif

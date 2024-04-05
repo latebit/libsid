@@ -15,6 +15,25 @@ void expect(bool condition, const char *name, const char *message) {
   printf("ok - %s\n", name);
 }
 
+void expectEqlNote(Note a, Note b, char *name) {
+  char msg[50];
+  sprintf(msg, "Expected (%d, %d, %d, %d) to equal (%d, %d, %d, %d)", a.pitch,
+          a.volume, a.wave, a.effect, b.pitch, b.volume, b.wave, b.effect);
+  expect(isEqualNote(a, b), name, msg);
+}
+
+void expectNotNull(void *a, char *name) {
+  char msg[50];
+  sprintf(msg, "Expected %s to be non-null", name);
+  expect(a != NULL, name, msg);
+}
+
+void expectNull(void *a, char *name) {
+  char msg[50];
+  sprintf(msg, "Expected %s to be null", name);
+  expect(a == NULL, name, msg);
+}
+
 void expectEqlInt(int a, int b, char *name) {
   char msg[50];
   sprintf(msg, "Expected %d to equal %d", a, b);

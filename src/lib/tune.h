@@ -8,7 +8,6 @@ typedef struct {
   int ticksPerBeat;
   int beatsCount;
   int tracksCount;
-  int *trackSize;
   Track **tracks;
 } Tune;
 

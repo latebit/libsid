@@ -6,28 +6,28 @@
 Track *newTrack(byte length) {
   Track *track = malloc(sizeof(Track));
   track->notes = malloc(sizeof(Note) * length);
-  track->length = length;
-  track->size = 0;
+  track->capacity = length;
+  track->length = 0;
   return track;
 }
 
 void freeTrack(Track *track) {
   free(track->notes);
   track->notes = NULL;
-  track->length = track->size = 0;
+  track->length = track->capacity = 0;
   free(track);
 }
 
 int push(Track *track, Note note) {
-  if (track->size >= track->length) {
+  if (track->length >= track->capacity) {
     return -1;
   }
-  track->notes[track->size++] = note;
-  return track->size;
+  track->notes[track->length++] = note;
+  return track->length;
 }
 
 Note get(Track *track, byte index) {
-  if (index >= track->size) {
+  if (index >= track->length || index < 0) {
     return newInvalid();
   }
   return track->notes[index];
@@ -35,6 +35,10 @@ Note get(Track *track, byte index) {
 
 bool isRest(Note symbol) { return symbol.id == -1; }
 bool isSameNote(Note a, Note b) { return a.id == b.id; }
+bool isEqualNote(Note a, Note b) {
+  return a.pitch == b.pitch && a.volume == b.volume && a.wave == b.wave &&
+         a.effect == b.effect;
+}
 bool isInvalid(Note symbol) { return symbol.id == -2; }
 
 Note newNote(byte note, hex volume, WaveType wave, EffectType effect) {
