@@ -38,7 +38,7 @@ typedef struct {
   // The number of samples per beat
   int samplesPerBeat;
 
-  // The tracks to be played
+  // The tracks to be played, they are owned by the Tune
   Track *tracks[TRACKS];
 
   // The oscillators for each track

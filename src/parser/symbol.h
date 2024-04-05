@@ -1,6 +1,6 @@
-#include "../lib/note.h"
+#include "../lib/track.h"
 
-Note *parseStandardSymbol(char *str);
+Note parseStandardSymbol(char *str);
 
 bool isRestSymbolString(char *str);
 bool isContinueSymbolString(char *str);

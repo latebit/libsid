@@ -1,5 +1,4 @@
 #include "sequencer.h"
-#include "note.h"
 #include "oscillator.h"
 #include "track.h"
 #include "utils.h"
@@ -69,45 +68,54 @@ void setTrack(Sequencer *s, int index, Track *t, Oscillator *o) {
 
 void freeSequencer(Sequencer *s) {
   for (int i = 0; i < TRACKS; i++) {
-    freeTrack(s->tracks[i]);
     free(s->oscillators[i]);
     free(s->envelopes[i]);
   }
   free(s);
 }
 
+// How many samples before the end of the note should the envelope start
+// releasing
+const int ENVELOPE_RELEASE_SAMPLES = SAMPLE_RATE / 100;
+
 float getNextSampleForChannel(Sequencer *s) {
   int shouldMoveToNextNote = s->currentSample % s->samplesPerBeat == 0;
-  int shouldStopEnvelope = (s->currentSample + 441) % s->samplesPerBeat == 0;
+  int shouldStopEnvelope =
+      (s->currentSample + ENVELOPE_RELEASE_SAMPLES) % s->samplesPerBeat == 0;
   float result = 0;
 
   for (int channel = 0; channel < TRACKS; channel++) {
-    int newNoteIndex =
-        (s->currentNote[channel] + 1) % s->tracks[channel]->length;
-    Note current = s->tracks[channel]->notes[s->currentNote[channel]];
-    Note new = s->tracks[channel]->notes[newNoteIndex];
+    Track *track = s->tracks[channel];
+    Envelope *envelope = s->envelopes[channel];
+    Oscillator *oscillator = s->oscillators[channel];
 
-    if (shouldStopEnvelope && !isSameSound(new, current)) {
-      stop(s->envelopes[channel]);
+    int currentNoteIndex = s->currentNote[channel];
+    int newNoteIndex = (currentNoteIndex + 1) % track->length;
+
+    Note current = get(track, currentNoteIndex);
+    Note new = get(track, newNoteIndex);
+
+    if (shouldStopEnvelope && !isSameNote(new, current)) {
+      stop(envelope);
     }
 
     if (shouldMoveToNextNote) {
       s->currentNote[channel] = newNoteIndex;
 
       // Set the frequency and volume of the oscillator
-      if (!isSameSound(new, current)) {
-        setNote(s->oscillators[channel], new.pitch);
-        setVolume(s->oscillators[channel], new.volume / 16.0);
-        setEffect(s->oscillators[channel], new.effect);
-        setWave(s->oscillators[channel], new.wave);
-        start(s->envelopes[channel]);
+      if (!isSameNote(new, current)) {
+        setNote(oscillator, new.pitch);
+        setVolume(oscillator, new.volume / 16.0);
+        setEffect(oscillator, new.effect);
+        setWave(oscillator, new.wave);
+        start(envelope);
       }
 
       current = new;
     }
 
-    process(s->envelopes[channel]);
-    result += oscillate(s->oscillators[channel]) * s->envelopes[channel]->value;
+    process(envelope);
+    result += oscillate(oscillator) * envelope->value;
   }
 
   // TODO: this should be wrapped by the minimum common multiple of the track

@@ -1,5 +1,5 @@
-#include "../lib/note.h"
 #include "../lib/oscillator.h"
+#include "../lib/track.h"
 #include "error.h"
 
 #include <stdarg.h>
@@ -36,7 +36,7 @@ int validate(bool condition, const char *message, ...) {
   return 0;
 }
 
-Note *parseStandardSymbol(char *str) {
+Note parseStandardSymbol(char *str) {
   size_t len = strlen(str);
 
   int invalid = 0;
@@ -65,7 +65,7 @@ Note *parseStandardSymbol(char *str) {
                "Invalid effect. Got %c, expected one of 0-4 or -\n", str[5]);
 
   if (invalid) {
-    return NULL;
+    return newInvalid();
   }
 
   byte note = 0;

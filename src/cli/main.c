@@ -1,6 +1,5 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
-#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -9,26 +8,28 @@
 #include "../lib/sequencer.h"
 #include "../parser/parser.h"
 
-Sequencer sequencer;
+Sequencer *sequencer;
+Tune *tune;
 
 void callback(void *userdata, Uint8 *stream, int len) {
   (void)userdata;
   int samples = len / sizeof(float);
 
+  if (!sequencer)
+    return;
+
   for (int i = 0; i < samples; i++) {
-    ((float *)stream)[i] = getNextSampleForChannel(&sequencer);
+    ((float *)stream)[i] = getNextSampleForChannel(sequencer);
   }
 }
 
 void load(char *filename) {
-  assert(access(filename, F_OK) == 0);
-
-  Tune *tune = fromFile(filename);
-  sequencer = *newSequencer(tune->bpm, tune->ticksPerBeat);
+  tune = fromFile(filename);
+  sequencer = newSequencer(tune->bpm, tune->ticksPerBeat);
 
   for (int i = 0; i < tune->tracksCount; i++) {
     Oscillator *oscillator = newOscillator(0);
-    setTrack(&sequencer, i, tune->tracks[i], oscillator);
+    setTrack(sequencer, i, tune->tracks[i], oscillator);
   }
 }
 
@@ -58,9 +59,14 @@ int main(int argc, char *argv[]) {
   while (SDL_WaitEvent(&e)) {
     switch (e.type) {
     case SDL_QUIT:
+      freeTune(tune);
+      freeSequencer(sequencer);
       return 0;
     }
   }
+
+  freeSequencer(sequencer);
+  freeTune(tune);
 
   return 0;
 }

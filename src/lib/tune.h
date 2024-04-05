@@ -4,7 +4,6 @@
 #include "track.h"
 
 typedef struct {
-  char *version;
   int bpm;
   int ticksPerBeat;
   int beatsCount;
@@ -13,8 +12,7 @@ typedef struct {
   Track **tracks;
 } Tune;
 
-Tune *newTune(char *version, int bpm, int ticksPerBeat, int beatsCount,
-              int tracksCount, int *trackSize, Track **tracks);
+Tune *newTune(int tracksCount);
 void freeTune(Tune *t);
 
 #endif
