@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#define abs(x) ((x) < 0 ? -(x) : (x))
+
 int testCount = 0;
 int failedCount = 0;
 
@@ -38,6 +40,19 @@ void expectEqlInt(int a, int b, char *name) {
   char msg[256];
   sprintf(msg, "Expected %d to equal %d", a, b);
   expect(a == b, name, msg);
+}
+
+void expectEqlFloat(float a, float b, char *name) {
+  float tolerance = 0.0001;
+  char msg[256];
+  sprintf(msg, "Expected %f to equal %f", a, b);
+  expect(abs(a - b) < tolerance, name, msg);
+}
+
+void expectLessThanFloat(float a, float b, char *name) {
+  char msg[256];
+  sprintf(msg, "Expected %f < %f", a, b);
+  expect(a < b, name, msg);
 }
 
 void expectEqlString(char *a, char *b, char *name) {
