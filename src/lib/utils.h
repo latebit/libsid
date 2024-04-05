@@ -8,6 +8,7 @@
 typedef unsigned char byte;
 typedef byte hex;
 
+// Clamp a float between a minimum and maximum
 float clamp(float value, float min, float max);
 
 #endif
