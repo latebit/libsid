@@ -1,17 +1,9 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-typedef char *string;
+#include "../lib/tune.h"
 
-typedef struct {
-  int bpm;
-  int subdivisions;
-  int bars;
-  int tracksCount;
-  string **tracks;
-} Composition;
-
-Composition *fromFile(char *filename);
-void freeComposition(Composition *c);
+Tune *fromFile(char *filename);
+Tune *fromString(char *str);
 
 #endif

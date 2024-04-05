@@ -14,7 +14,6 @@ typedef struct {
   float sustainLevel;
   float releasePerSample;
   EnvelopeState state;
-
   float value;
 } Envelope;
 
@@ -38,7 +37,11 @@ typedef struct {
   // The number of samples per beat
   int samplesPerBeat;
 
-  // The tracks to be played
+  // Used to wrap the current sample back to 0 so that we can loop the track
+  // indefinitely
+  int wrappingFactor;
+
+  // The tracks to be played, they are owned by the Tune
   Track *tracks[TRACKS];
 
   // The oscillators for each track

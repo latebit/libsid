@@ -84,7 +84,7 @@ void setFrequency(Oscillator *o, float frequency) {
   o->currentStep = 0;
 }
 
-void setNote(Oscillator *o, byte note) {
+void setPitch(Oscillator *o, byte note) {
   setFrequency(o, NOTE_TO_FREQUENCY[note]);
 }
 
@@ -94,23 +94,29 @@ void setWave(Oscillator *oscillator, WaveType wave) {
   oscillator->waveType = wave;
 }
 
+const Effect DROP_EFFECT = (Effect){DROP, 0.9999, 1};
+const Effect SLIDE_EFFECT = (Effect){SLIDE, 1.00005, 1};
+const Effect FADEIN_EFFECT = (Effect){FADEIN, 0.0001, 0};
+const Effect FADEOUT_EFFECT = (Effect){FADEOUT, -0.0001, 1};
+const Effect NONE_EFFECT = (Effect){NONE, 0, 0};
+
 void setEffect(Oscillator *oscillator, EffectType effect) {
   switch (effect) {
   case DROP:
-    oscillator->effect = (Effect){effect, 0.9999, 1};
+    oscillator->effect = DROP_EFFECT;
     return;
   case SLIDE:
-    oscillator->effect = (Effect){effect, 1.00005, 1};
+    oscillator->effect = SLIDE_EFFECT;
     return;
   case FADEIN:
-    oscillator->effect = (Effect){effect, 0.0001, 0};
+    oscillator->effect = FADEIN_EFFECT;
     return;
   case FADEOUT:
-    oscillator->effect = (Effect){effect, -0.0001, 1};
+    oscillator->effect = FADEOUT_EFFECT;
     return;
   default:
   case NONE:
-    oscillator->effect = (Effect){effect, 0, 0};
+    oscillator->effect = NONE_EFFECT;
     return;
   }
 }
@@ -139,6 +145,7 @@ float oscillate(Oscillator *o) {
   }
 
   float sample = waveTable[o->waveType][(int)o->currentStep];
-  // return sample * o->volume;
   return processVolume(&o->effect, sample) * o->volume;
 }
+
+void freeOscillator(Oscillator *o) { free(o); }

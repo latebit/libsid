@@ -1,45 +1,52 @@
 #include <SDL2/SDL.h>
-#include <assert.h>
+#include <SDL2/SDL_audio.h>
+#include <SDL2/SDL_stdinc.h>
+#include <SDL2/SDL_timer.h>
+#include <libgen.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
 #include "../lib/oscillator.h"
 #include "../lib/sequencer.h"
-#include "../lib/track.h"
 #include "../parser/parser.h"
 
-Sequencer sequencer;
+Sequencer *sequencer;
+Tune *tune;
+int loaded = 0;
 
 void callback(void *userdata, Uint8 *stream, int len) {
   (void)userdata;
   int samples = len / sizeof(float);
 
+  if (loaded != 5) {
+    loaded++;
+    SDL_memset(stream, 0, len);
+    return;
+  }
+
   for (int i = 0; i < samples; i++) {
-    ((float *)stream)[i] = getNextSampleForChannel(&sequencer);
+    ((float *)stream)[i] = getNextSampleForChannel(sequencer);
   }
 }
 
 void load(char *filename) {
-  assert(access(filename, F_OK) == 0);
+  tune = fromFile(filename);
+  sequencer = newSequencer(tune->bpm, tune->ticksPerBeat);
 
-  Composition *composition = fromFile(filename);
-  sequencer = *newSequencer(composition->bpm, composition->subdivisions);
-
-  for (int i = 0; i < composition->tracksCount; i++) {
-    Track *track = fromRawTrack(composition->tracks[i], composition->bars);
+  for (int i = 0; i < tune->tracksCount; i++) {
     Oscillator *oscillator = newOscillator(0);
-    setTrack(&sequencer, i, track, oscillator);
+    setTrack(sequencer, i, tune->tracks[i], oscillator);
   }
-  freeComposition(composition);
 }
 
 int main(int argc, char *argv[]) {
-  if (0 != SDL_Init(SDL_INIT_AUDIO | SDL_INIT_EVENTS))
+  if (0 != SDL_Init(SDL_INIT_AUDIO))
     return 1;
 
   if (argc != 2) {
-    printf("Usage: %s <filename>\n", argv[0]);
+    char *name = basename(argv[0]);
+    printf("Usage: %s <filename>\n", name);
     exit(1);
   }
 
@@ -51,20 +58,21 @@ int main(int argc, char *argv[]) {
                         .samples = BUFFER_SIZE,
                         .callback = callback};
 
-  if (0 != SDL_OpenAudio(&spec, NULL))
-    return 1;
+  unsigned int d = SDL_OpenAudioDevice(NULL, 0, &spec, NULL, 1);
+  SDL_PauseAudioDevice(d, 0);
 
-  SDL_PauseAudio(0);
-
-  while (1) {
-    SDL_Event e;
-    while (SDL_PollEvent(&e)) {
-      switch (e.type) {
-      case SDL_QUIT:
-        return 0;
-      }
+  SDL_Event e;
+  while (SDL_WaitEvent(&e)) {
+    switch (e.type) {
+    case SDL_QUIT:
+      freeTune(tune);
+      freeSequencer(sequencer);
+      return 0;
     }
   }
+
+  freeSequencer(sequencer);
+  freeTune(tune);
 
   return 0;
 }

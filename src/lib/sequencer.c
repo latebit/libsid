@@ -1,6 +1,5 @@
 #include "sequencer.h"
 #include "oscillator.h"
-#include "symbol.h"
 #include "track.h"
 #include "utils.h"
 #include <stdlib.h>
@@ -45,6 +44,7 @@ Sequencer *newSequencer(int bpm, int subdivisions) {
                    .bpm = bpm,
                    .subdivisions = subdivisions,
                    .currentNote = {0},
+                   .wrappingFactor = 1,
                    .samplesPerBeat = SAMPLE_RATE / (bpm * subdivisions) * 60};
 
   for (int i = 0; i < TRACKS; i++) {
@@ -60,60 +60,91 @@ Sequencer *newSequencer(int bpm, int subdivisions) {
   return s;
 }
 
+int gcd(int a, int b) {
+  if (b == 0)
+    return a;
+  return gcd(b, a % b);
+}
+
+int lcm(int a, int b) { return (a * b) / gcd(a, b); }
+
 void setTrack(Sequencer *s, int index, Track *t, Oscillator *o) {
   if (index >= TRACKS || index < 0)
     return;
   s->tracks[index] = t;
   s->oscillators[index] = o;
+
+  // This is used to allow the first note of each track to be executed
+  // else the first note will be skipped until there is a change note event
+  Note firstNote = get(t, 0);
+
+  if (!isInvalid(firstNote)) {
+    setPitch(o, firstNote.pitch);
+    setVolume(o, firstNote.volume / 16.0);
+    setEffect(o, firstNote.effect);
+    setWave(o, firstNote.wave);
+    start(s->envelopes[index]);
+  }
+
+  // Calculate the least common multiple of the wrapping factor so that we can
+  // wrap the currentSample counter at the right time
+  s->wrappingFactor = lcm(s->wrappingFactor, t->length * s->samplesPerBeat);
 }
 
 void freeSequencer(Sequencer *s) {
   for (int i = 0; i < TRACKS; i++) {
-    freeTrack(s->tracks[i]);
     free(s->oscillators[i]);
     free(s->envelopes[i]);
   }
   free(s);
 }
 
+// How many samples before the end of the note should the envelope start
+// releasing
+const int ENVELOPE_RELEASE_SAMPLES = SAMPLE_RATE / 100;
+
 float getNextSampleForChannel(Sequencer *s) {
   int shouldMoveToNextNote = s->currentSample % s->samplesPerBeat == 0;
-  int shouldStopEnvelope = (s->currentSample + 441) % s->samplesPerBeat == 0;
+  int shouldStopEnvelope =
+      (s->currentSample + ENVELOPE_RELEASE_SAMPLES) % s->samplesPerBeat == 0;
   float result = 0;
 
   for (int channel = 0; channel < TRACKS; channel++) {
-    int newNoteIndex =
-        (s->currentNote[channel] + 1) % s->tracks[channel]->length;
-    Symbol current = s->tracks[channel]->notes[s->currentNote[channel]];
-    Symbol new = s->tracks[channel]->notes[newNoteIndex];
+    Track *track = s->tracks[channel];
+    Envelope *envelope = s->envelopes[channel];
+    Oscillator *oscillator = s->oscillators[channel];
 
-    if (shouldStopEnvelope && !isSameSymbol(new, current)) {
-      stop(s->envelopes[channel]);
+    int currentNoteIndex = s->currentNote[channel];
+    int newNoteIndex = (currentNoteIndex + 1) % track->length;
+
+    Note current = get(track, currentNoteIndex);
+    Note new = get(track, newNoteIndex);
+    bool isChangingNotes = !isSameNote(new, current);
+
+    if (shouldStopEnvelope && isChangingNotes) {
+      stop(envelope);
     }
 
     if (shouldMoveToNextNote) {
       s->currentNote[channel] = newNoteIndex;
 
       // Set the frequency and volume of the oscillator
-      if (!isSameSymbol(new, current)) {
-        setNote(s->oscillators[channel], new.note);
-        setVolume(s->oscillators[channel], new.volume / 16.0);
-        setEffect(s->oscillators[channel], new.effect);
-        setWave(s->oscillators[channel], new.wave);
-        start(s->envelopes[channel]);
+      if (isChangingNotes) {
+        setPitch(oscillator, new.pitch);
+        setVolume(oscillator, new.volume / 16.0);
+        setEffect(oscillator, new.effect);
+        setWave(oscillator, new.wave);
+        start(envelope);
       }
 
       current = new;
     }
 
-    process(s->envelopes[channel]);
-    result += oscillate(s->oscillators[channel]) * s->envelopes[channel]->value;
+    process(envelope);
+    result += oscillate(oscillator) * envelope->value;
   }
 
-  // TODO: this should be wrapped by the minimum common multiple of the track
-  // lengths
-  s->currentSample =
-      (s->currentSample + 1) % (s->samplesPerBeat * s->tracks[0]->length);
+  s->currentSample = (s->currentSample + 1) % (s->wrappingFactor);
 
   return result / TRACKS;
 }

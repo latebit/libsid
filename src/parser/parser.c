@@ -1,57 +1,176 @@
 #include "parser.h"
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-Composition *fromFile(char *filename) {
+#include "error.h"
+#include "symbol.h"
+
+char *readFileIntoBuffer(char *filename) {
   FILE *file = fopen(filename, "r");
   if (!file) {
     return NULL;
   }
 
-  Composition *composition = malloc(sizeof(Composition));
+  // Get the file size
+  fseek(file, 0, SEEK_END);
+  long fsize = ftell(file);
+  fseek(file, 0, SEEK_SET);
 
-  // read the first line of the file
-  fscanf(file, "%d\n", &composition->bpm);
-  fscanf(file, "%d\n", &composition->subdivisions);
-  fscanf(file, "%d\n", &composition->bars);
-  fscanf(file, "%d\n", &composition->tracksCount);
-
-  // allocate an array of array of strings
-  composition->tracks = malloc(sizeof(char **) * composition->tracksCount);
-  for (int i = 0; i < composition->tracksCount; i++) {
-    composition->tracks[i] = malloc(sizeof(char *) * composition->bars);
-  }
-
-  // read the rest of the file
-  for (int i = 0; i < composition->bars; i++) {
-    char *line = NULL;
-    size_t len = 0;
-
-    assert(getline(&line, &len, file) != -1);
-
-    char *symbol = strtok(line, " \t\n\r\f\v");
-    for (int j = 0; j < composition->tracksCount; j++) {
-      assert(strlen(symbol) > 0);
-      composition->tracks[j][i] = (char *)malloc(strlen(symbol) + 1);
-      strcpy(composition->tracks[j][i], symbol);
-      symbol = strtok(NULL, " \t\n\r\f\v");
-    }
-
-    free(line);
-  }
+  // Read the file into the buffer
+  char *buffer = malloc(fsize + 1);
+  fread(buffer, 1, fsize, file);
+  buffer[fsize] = 0;
 
   fclose(file);
-  return composition;
+
+  return buffer;
 }
 
-void freeComposition(Composition *c) {
-  for (int i = 0; i < c->tracksCount; i++) {
-    for (int j = 0; j < c->bars; j++) {
-      free(c->tracks[i][j]);
-    }
-    free(c->tracks[i]); // Free each array of strings
+// Reads the header of the tune and returns the offset to the end of the header
+// or -1 if the header is invalid
+int readHeader(char *str, char *version, int *bpm, int *ticksPerBeat,
+               int *beatsCount, int *tracksCount) {
+  int offset = 0;
+  int read = sscanf(str, "#%4c#\n%d\n%d\n%d\n%d\n%n", version, bpm,
+                    ticksPerBeat, beatsCount, tracksCount, &offset);
+  if (read != 5) {
+    error("Invalid header");
+    return -1;
   }
-  free(c->tracks);
+
+  if (strcmp(version, "v0.1") != 0) {
+    error("Unsupported version %s", version);
+    return -1;
+  }
+
+  if (*bpm <= 10 || *bpm >= 300) {
+    error("Invalid bpm. Expected a number 10-300, got %d", *bpm);
+    return -1;
+  }
+
+  if (*ticksPerBeat <= 0 || *ticksPerBeat > 16) {
+    error("Invalid ticks per beat. Expected a number 1-16, got %d",
+          *ticksPerBeat);
+    return -1;
+  }
+
+  if (*beatsCount <= 0 || *beatsCount > 64) {
+    error("Invalid beats count. Expected a number 1-64, got %d", *beatsCount);
+    return -1;
+  }
+
+  if (*tracksCount <= 0 || *tracksCount > 3) {
+    error("Invalid tracks count. Expected a number 1-3, got %d", *tracksCount);
+    return -1;
+  }
+
+  return offset;
+}
+
+Tune *fromString(char *str) {
+  char version[5] = "";
+  int bpm, ticksPerBeat, beatsCount, tracksCount;
+  int headerOffset =
+      readHeader(str, version, &bpm, &ticksPerBeat, &beatsCount, &tracksCount);
+
+  if (headerOffset < 0) {
+    // The error message is already printed in the header parser
+    return NULL;
+  }
+
+  Tune *tune = newTune(tracksCount);
+  tune->bpm = bpm;
+  tune->ticksPerBeat = ticksPerBeat;
+  tune->beatsCount = beatsCount;
+
+  int maxTrackLength = tune->beatsCount * tune->ticksPerBeat;
+
+  // A flag use to stop collection of symbols for a track when the end of track
+  // symbol is found
+  bool trackEnded[tune->tracksCount];
+
+  // Initialize the tracks and track ended flags
+  for (int i = 0; i < tune->tracksCount; i++) {
+    tune->tracks[i] = newTrack(maxTrackLength);
+    trackEnded[i] = false;
+  }
+
+  // A string containing the body of the tune
+  char *body = strdup(str + headerOffset);
+
+  // Pointers used by strtok_r to keep track of the current line and symbol
+  // Note: they cannot be freed, they are managed by strtok_r
+  char *lineOffset, *symbolOffset;
+
+  // The current line being processed
+  char *line = strtok_r(body, "\n", &lineOffset);
+
+  for (int i = 0; i < maxTrackLength; i++) {
+    if (!line) {
+      error("Unexpected end of file");
+      goto cleanAndReturn;
+    };
+
+    char *symbol = strtok_r(line, "|\n", &symbolOffset);
+    for (int j = 0; j < tune->tracksCount; j++) {
+      if (trackEnded[j]) {
+        symbol = strtok_r(NULL, "|\n", &symbolOffset);
+        continue;
+      }
+
+      if (isEndOfTrackSymbolString(symbol)) {
+        symbol = strtok_r(NULL, "|\n", &symbolOffset);
+        trackEnded[j] = true;
+        continue;
+      }
+
+      Track *track = tune->tracks[j];
+
+      if (isRestSymbolString(symbol)) {
+        push(track, newRest());
+      } else if (isContinueSymbolString(symbol)) {
+        if (i == 0) {
+          error("First symbol of a track cannot be a continue symbol");
+          goto cleanAndReturn;
+        }
+
+        push(track, get(track, i - 1));
+      } else {
+        Note n = parseStandardSymbol(symbol);
+        if (isInvalid(n)) {
+          // The error message is already printed in the symbol parser
+          goto cleanAndReturn;
+        }
+
+        push(track, n);
+      }
+
+      symbol = strtok_r(NULL, "|\n", &symbolOffset);
+    }
+
+    line = strtok_r(NULL, "\n", &lineOffset);
+  }
+  free(body);
+
+  return tune;
+
+cleanAndReturn:
+  free(line);
+  free(body);
+  freeTune(tune);
+  return NULL;
+}
+
+Tune *fromFile(char *filename) {
+  char *content = readFileIntoBuffer(filename);
+  if (content == NULL) {
+    error("Could not open file %s", filename);
+    return NULL;
+  }
+
+  Tune *tune = fromString(content);
+  free(content);
+
+  return tune;
 }

@@ -5,11 +5,19 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Launch test using GDB",
+      "type": "gdb",
+      "request": "launch",
+      "target": "build/oscillator",
+      "cwd": "${workspaceRoot}",
+      "preLaunchTask": "CMake: build"
+    },
+    {
       "name": "Launch using GDB",
       "type": "gdb",
       "request": "launch",
       "target": "build/sid-cli",
-      "arguments": "fixtures/example",
+      "arguments": "examples/example",
       "cwd": "${workspaceRoot}",
       "preLaunchTask": "CMake: build"
     }
