@@ -39,6 +39,32 @@ int readHeader(char *str, char *version, int *bpm, int *ticksPerBeat,
     return -1;
   }
 
+  if (strcmp(version, "v0.1") != 0) {
+    error("Unsupported version %s", version);
+    return -1;
+  }
+
+  if (*bpm <= 10 || *bpm >= 300) {
+    error("Invalid bpm. Expected a number 10-300, got %d", *bpm);
+    return -1;
+  }
+
+  if (*ticksPerBeat <= 0 || *ticksPerBeat > 16) {
+    error("Invalid ticks per beat. Expected a number 1-16, got %d",
+          *ticksPerBeat);
+    return -1;
+  }
+
+  if (*beatsCount <= 0 || *beatsCount > 64) {
+    error("Invalid beats count. Expected a number 1-64, got %d", *beatsCount);
+    return -1;
+  }
+
+  if (*tracksCount <= 0 || *tracksCount > 3) {
+    error("Invalid tracks count. Expected a number 1-3, got %d", *tracksCount);
+    return -1;
+  }
+
   return offset;
 }
 
@@ -49,12 +75,7 @@ Tune *fromString(char *str) {
       readHeader(str, version, &bpm, &ticksPerBeat, &beatsCount, &tracksCount);
 
   if (headerOffset < 0) {
-    error("Invalid header");
-    return NULL;
-  }
-
-  if (strcmp(version, "v0.1") != 0) {
-    error("Unsupported version %s", version);
+    // The error message is already printed in the header parser
     return NULL;
   }
 

@@ -140,12 +140,117 @@ void brokenHeader() {
   expectNull(t, "does not parse with invalid numbers");
 }
 
+void header() {
+  char *str = "#v0.2#\n"
+              "90\n"
+              "1\n"
+              "3\n"
+              "1\n"
+              "C-4---\n"
+              "......\n"
+              "------\n";
+  Tune *t = fromString(str);
+  expectNull(t, "does not parse the tune with invalid version");
+
+  str = "#v0.1#\n"
+        "0\n"
+        "1\n"
+        "3\n"
+        "1\n"
+        "C-4---\n"
+        "......\n"
+        "------\n";
+  t = fromString(str);
+  expectNull(t, "does not parse the tune with invalid bpm (too small)");
+
+  str = "#v0.1#\n"
+        "400\n"
+        "1\n"
+        "3\n"
+        "1\n"
+        "C-4---\n"
+        "......\n"
+        "------\n";
+  t = fromString(str);
+  expectNull(t, "does not parse the tune with invalid bpm (too big)");
+
+  str = "#v0.1#\n"
+        "90\n"
+        "0\n"
+        "3\n"
+        "1\n"
+        "C-4---\n"
+        "......\n"
+        "------\n";
+  t = fromString(str);
+  expectNull(t,
+             "does not parse the tune with invalid ticks per beat (too small)");
+
+  str = "#v0.1#\n"
+        "90\n"
+        "17\n"
+        "3\n"
+        "1\n"
+        "C-4---\n"
+        "......\n"
+        "------\n";
+  t = fromString(str);
+  expectNull(t,
+             "does not parse the tune with invalid ticks per beat (too big)");
+
+  str = "#v0.1#\n"
+        "90\n"
+        "1\n"
+        "0\n"
+        "1\n"
+        "C-4---\n"
+        "......\n"
+        "------\n";
+  t = fromString(str);
+  expectNull(t, "does not parse the tune with invalid beats count (too small)");
+
+  str = "#v0.1#\n"
+        "90\n"
+        "1\n"
+        "65\n"
+        "1\n"
+        "C-4---\n"
+        "......\n"
+        "------\n";
+  t = fromString(str);
+  expectNull(t, "does not parse the tune with invalid beats count (too big)");
+
+  str = "#v0.1#\n"
+        "90\n"
+        "1\n"
+        "3\n"
+        "0\n"
+        "C-4---\n"
+        "......\n"
+        "------\n";
+  t = fromString(str);
+  expectNull(t,
+             "does not parse the tune with invalid tracks count (too small)");
+
+  str = "#v0.1#\n"
+        "90\n"
+        "1\n"
+        "3\n"
+        "4\n"
+        "C-4---\n"
+        "......\n"
+        "------\n";
+  t = fromString(str);
+  expectNull(t, "does not parse the tune with invalid tracks count (too big)");
+}
+
 int main() {
   test(simplest);
   test(differentLengths);
   test(rests);
   test(continues);
   test(brokenHeader);
+  test(header);
 
   return report();
 }

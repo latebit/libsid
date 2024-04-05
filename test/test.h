@@ -5,7 +5,7 @@
 // Used for the test macro
 #include <stdio.h>
 
-#define test(func, ...)                                                        \
+#define test(func)                                                             \
   do {                                                                         \
     printf("%s\n", #func);                                                     \
     func();                                                                    \
