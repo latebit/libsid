@@ -22,16 +22,16 @@ void expectEqlNote(Note a, Note b, char *name) {
   expect(isEqualNote(a, b), name, msg);
 }
 
+void expectTrue(bool condition, char *name) {
+  expect(condition, name, "Expected value to be true");
+}
+
 void expectNotNull(void *a, char *name) {
-  char msg[256];
-  sprintf(msg, "Expected %s to be non-null", name);
-  expect(a != NULL, name, msg);
+  expect(a != NULL, name, "Expected value not to be null");
 }
 
 void expectNull(void *a, char *name) {
-  char msg[256];
-  sprintf(msg, "Expected %s to be null", name);
-  expect(a == NULL, name, msg);
+  expect(a == NULL, name, "Expected value to be null");
 }
 
 void expectEqlInt(int a, int b, char *name) {

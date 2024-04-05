@@ -14,6 +14,7 @@
 void expectEqlInt(int a, int b, char *msg);
 void expectEqlString(char *a, char *b, char *msg);
 void expectEqlNote(Note a, Note b, char *msg);
+void expectTrue(bool condition, char *name);
 void expectNull(void *a, char *msg);
 void expectNotNull(void *a, char *msg);
 void expect(bool condition, const char *name, const char *message);

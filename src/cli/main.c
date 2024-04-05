@@ -2,6 +2,7 @@
 #include <SDL2/SDL_audio.h>
 #include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_timer.h>
+#include <libgen.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -40,11 +41,12 @@ void load(char *filename) {
 }
 
 int main(int argc, char *argv[]) {
-  if (0 != SDL_Init(SDL_INIT_AUDIO | SDL_INIT_EVENTS))
+  if (0 != SDL_Init(SDL_INIT_AUDIO))
     return 1;
 
   if (argc != 2) {
-    printf("Usage: %s <filename>\n", argv[0]);
+    char *name = basename(argv[0]);
+    printf("Usage: %s <filename>\n", name);
     exit(1);
   }
 

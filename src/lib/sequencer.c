@@ -77,11 +77,14 @@ void setTrack(Sequencer *s, int index, Track *t, Oscillator *o) {
   // This is used to allow the first note of each track to be executed
   // else the first note will be skipped until there is a change note event
   Note firstNote = get(t, 0);
-  setPitch(o, firstNote.pitch);
-  setVolume(o, firstNote.volume / 16.0);
-  setEffect(o, firstNote.effect);
-  setWave(o, firstNote.wave);
-  start(s->envelopes[index]);
+
+  if (!isInvalid(firstNote)) {
+    setPitch(o, firstNote.pitch);
+    setVolume(o, firstNote.volume / 16.0);
+    setEffect(o, firstNote.effect);
+    setWave(o, firstNote.wave);
+    start(s->envelopes[index]);
+  }
 
   // Calculate the least common multiple of the wrapping factor so that we can
   // wrap the currentSample counter at the right time
@@ -116,8 +119,9 @@ float getNextSampleForChannel(Sequencer *s) {
 
     Note current = get(track, currentNoteIndex);
     Note new = get(track, newNoteIndex);
+    bool isChangingNotes = !isSameNote(new, current);
 
-    if (shouldStopEnvelope && !isSameNote(new, current)) {
+    if (shouldStopEnvelope && isChangingNotes) {
       stop(envelope);
     }
 
@@ -125,7 +129,7 @@ float getNextSampleForChannel(Sequencer *s) {
       s->currentNote[channel] = newNoteIndex;
 
       // Set the frequency and volume of the oscillator
-      if (!isSameNote(new, current)) {
+      if (isChangingNotes) {
         setPitch(oscillator, new.pitch);
         setVolume(oscillator, new.volume / 16.0);
         setEffect(oscillator, new.effect);

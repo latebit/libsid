@@ -17,7 +17,7 @@ target_link_libraries(${PROJECT_NAME} SDL2)
 
 enable_testing()
 
-file(GLOB TEST_SRC "${CMAKE_SOURCE_DIR}/src/parser/*.test.c")
+file(GLOB TEST_SRC "${CMAKE_SOURCE_DIR}/src/*/*.test.c")
 foreach(test_file ${TEST_SRC})
   get_filename_component(test_name ${test_file} NAME_WE)
   add_executable(${test_name} ${test_file} ${PARSER_SRC} "${CMAKE_SOURCE_DIR}/test/test.c")
