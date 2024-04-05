@@ -2,15 +2,16 @@
 
 #include <stdarg.h>
 #include <stdio.h>
-#include <stdlib.h>
 
-void validate(bool condition, const char *message, ...) {
-  if (!condition) {
-    va_list args;
-    va_start(args, message);
-    fprintf(stderr, "error: ");
-    vfprintf(stderr, message, args);
-    va_end(args);
-    exit(1);
-  }
+void verror(const char *message, va_list args) {
+  fprintf(stderr, "error: ");
+  vfprintf(stderr, message, args);
+  fprintf(stderr, "\n");
+}
+
+void error(const char *message, ...) {
+  va_list args;
+  va_start(args, message);
+  verror(message, args);
+  va_end(args);
 }

@@ -6,6 +6,18 @@
 #include "error.h"
 #include "symbol.h"
 
+void clean(Tune *t, FILE *f, char ***rawTracks, int maxTrackLength) {
+  for (int i = 0; i < t->tracksCount; i++) {
+    for (int j = 0; j < maxTrackLength; j++) {
+      free(rawTracks[i][j]);
+    }
+    free(rawTracks[i]);
+  }
+
+  freeTune(t);
+  fclose(f);
+}
+
 Tune *fromFile(char *filename) {
   FILE *file = fopen(filename, "r");
   if (!file) {
@@ -39,13 +51,18 @@ Tune *fromFile(char *filename) {
     char *line = NULL;
     size_t len = 0;
 
-    validate(getline(&line, &len, file) != -1, "Unexpected end of file\n");
+    if (getline(&line, &len, file) == -1) {
+      error("Unexpected end of file");
+      clean(tune, file, rawTracks, maxTrackLength);
+      return NULL;
+    };
 
     char *symbol = strtok(line, "|\n");
     for (int j = 0; j < tune->tracksCount; j++) {
-      if (i == 0) {
-        validate(!isContinueSymbolString(symbol),
-                 "First symbol of a track cannot be a continue symbol\n");
+      if (i == 0 && isContinueSymbolString(symbol)) {
+        error("First symbol of a track cannot be a continue symbol");
+        clean(tune, file, rawTracks, maxTrackLength);
+        return NULL;
       }
 
       if (!shouldCollect[j]) {
@@ -80,7 +97,14 @@ Tune *fromFile(char *filename) {
         // This is validated above, it won't go out of bounds
         symbols[j] = symbols[j - 1];
       } else {
-        symbols[j] = *parseStandardSymbol(rawSymbol);
+        Note *n = parseStandardSymbol(rawSymbol);
+        if (n == NULL) {
+          // The error message is already printed in the parser
+          clean(tune, file, rawTracks, maxTrackLength);
+          return NULL;
+        }
+
+        symbols[j] = *n;
       }
 
       free(rawTracks[i][j]);
