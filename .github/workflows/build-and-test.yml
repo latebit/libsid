@@ -41,7 +41,7 @@ jobs:
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-        -DCMAKE_PREFIX_PATH=${{ steps.sdl.outputs.prefix }}
+        -DCMAKE_POLICY_DEFAULT_CMP0074=NEW
         -S ${{ github.workspace }}
 
     - name: Build
