@@ -3,6 +3,7 @@ name: Build and test
 on:
   push:
     branches: [ "main" ]
+    tags: [ '*' ]
   pull_request:
     branches: [ "main" ]
 
@@ -66,5 +67,5 @@ jobs:
       with:
         files: ${{ steps.strings.outputs.build-output-dir }}/sid-*
         token: ${{ secrets.GITHUB_TOKEN }}
-        tag_name: ${{ replace(github.ref, 'refs/tags/', '') }}
+        tag_name: ${{ github.ref_name }}
         fail_on_unmatched_files: falsebuild
