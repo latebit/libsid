@@ -13,17 +13,10 @@
 
 Sequencer *sequencer;
 Tune *tune;
-int loaded = 0;
 
 void callback(void *userdata, Uint8 *stream, int len) {
   (void)userdata;
   int samples = len / sizeof(float);
-
-  if (loaded != 5) {
-    loaded++;
-    SDL_memset(stream, 0, len);
-    return;
-  }
 
   for (int i = 0; i < samples; i++) {
     ((float *)stream)[i] = getNextSampleForChannel(sequencer);
