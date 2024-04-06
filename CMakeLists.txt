@@ -6,8 +6,6 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_FLAGS_DEBUG "-g -fno-omit-frame-pointer -Wall -Wpedantic -fsanitize=address -gdwarf-2")
 option(SDL2_PATH "Path to SDL2" $ENV{SDL2_PATH})
 
-message(STATUS "SDL2_PATH: ${SDL2_PATH}")
-
 find_package(SDL2 REQUIRED CONFIG)
 
 file(GLOB PARSER_SRC "${CMAKE_SOURCE_DIR}/src/parser/*.c")
