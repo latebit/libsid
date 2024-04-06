@@ -36,8 +36,7 @@ foreach(test_file ${TEST_SRC})
   add_test(NAME ${test_name} COMMAND ${test_name})
 endforeach()
 
-install(TARGETS ${PROJECT_NAME} DESTINATION lib)
-install(FILES ${INCLUDE_FILES} DESTINATION include/${PROJECT_NAME})
+install(TARGETS ${PROJECT_NAME}play DESTINATION bin)
 
 # Package with CPack
 set(CPACK_PACKAGE_VENDOR "Manuel Spagnolo")
