@@ -65,6 +65,8 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/')
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
       run: cpack
+      env:
+        VERSION: ${{ github.ref_name }}
 
     - name: Create Release
       if: startsWith(github.ref, 'refs/tags/')
