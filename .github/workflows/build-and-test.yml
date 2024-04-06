@@ -34,13 +34,14 @@ jobs:
       id: sdl
       with:
         install-linux-dependencies: true
-        version: 2-latest
+        version: 2.30.2
 
     - name: Configure CMake
       run: >
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DCMAKE_PREFIX_PATH=${{ steps.sdl.outputs.prefix }}
         -S ${{ github.workspace }}
 
     - name: Build

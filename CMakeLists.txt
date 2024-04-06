@@ -3,7 +3,6 @@ project(sid VERSION 0.0.1 LANGUAGES C)
 
 set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_FLAGS_DEBUG "-g -fno-omit-frame-pointer -Wall -Wpedantic -fsanitize=address -gdwarf-2")
-set(CMAKE_C_FLAGS_RELEASE "-O3")
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 find_package(SDL2 REQUIRED CONFIG)
