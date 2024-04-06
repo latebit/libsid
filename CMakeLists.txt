@@ -1,8 +1,12 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.22.1)
 project(sid VERSION 0.0.1 LANGUAGES C)
 
 set(CMAKE_C_STANDARD 23)
-set(CMAKE_C_FLAGS_DEBUG "-g -O0 -fno-omit-frame-pointer -gdwarf-2")
+set(CMAKE_C_FLAGS_DEBUG "-g -fno-omit-frame-pointer -Wall -Wpedantic -fsanitize=address -gdwarf-2")
+set(CMAKE_C_FLAGS_RELEASE "-O3")
+
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+find_package(SDL2 REQUIRED)
 
 file(GLOB PARSER_SRC "${CMAKE_SOURCE_DIR}/src/parser/*.c")
 list(FILTER PARSER_SRC EXCLUDE REGEX ".test.c$")
@@ -10,10 +14,10 @@ file(GLOB LIB_SRC "${CMAKE_SOURCE_DIR}/src/lib/*.c")
 list(FILTER LIB_SRC EXCLUDE REGEX ".test.c$")
 
 add_executable(${PROJECT_NAME}-cli "${CMAKE_SOURCE_DIR}/src/cli/main.c" ${LIB_SRC} ${PARSER_SRC})
-target_link_libraries(${PROJECT_NAME}-cli SDL2)
+target_link_libraries(${PROJECT_NAME}-cli ${SDL2_LIBRARY})
 
 add_library(${PROJECT_NAME} SHARED ${LIB_SRC})
-target_link_libraries(${PROJECT_NAME} SDL2)
+target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY})
 
 enable_testing()
 
