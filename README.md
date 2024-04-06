@@ -15,7 +15,7 @@ All the specifications present and future can be found [here](./docs/).
 ## Usage
 
 ```sh
-sid-cli <path-to-tune-file>
+sidplay <path-to-tune-file>
 ```
 
 ## Development
@@ -48,4 +48,4 @@ cmake --build build -t test
 ```
 
 The `build` folder will now have a `libsid.so` (or `libsid.dylib`, `libsid.dll`) as well as 
-the `sid-cli` executables.
+the `sidplay` executables.

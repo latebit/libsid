@@ -20,8 +20,8 @@ list(FILTER PARSER_SRC EXCLUDE REGEX ".test.c$")
 file(GLOB LIB_SRC "${CMAKE_SOURCE_DIR}/src/lib/*.c")
 list(FILTER LIB_SRC EXCLUDE REGEX ".test.c$")
 
-add_executable(${PROJECT_NAME}-cli "${CMAKE_SOURCE_DIR}/src/cli/main.c" ${LIB_SRC} ${PARSER_SRC})
-target_link_libraries(${PROJECT_NAME}-cli SDL2::SDL2)
+add_executable(${PROJECT_NAME}play "${CMAKE_SOURCE_DIR}/src/cli/main.c" ${LIB_SRC} ${PARSER_SRC})
+target_link_libraries(${PROJECT_NAME}play SDL2::SDL2)
 
 add_library(${PROJECT_NAME} SHARED ${LIB_SRC})
 target_link_libraries(${PROJECT_NAME} SDL2::SDL2)
