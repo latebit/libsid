@@ -14,9 +14,9 @@ void freeTune(Tune *c) {
 
 Tune *newTune(int tracksCount) {
   Tune *tune = malloc(sizeof(Tune));
-  tune->bpm = 0;
-  tune->ticksPerBeat = 0;
-  tune->beatsCount = 0;
+  tune->bpm = 10;
+  tune->ticksPerBeat = 1;
+  tune->beatsCount = 1;
   tune->tracksCount = tracksCount;
   tune->tracks = malloc(sizeof(Track *) * tracksCount);
   return tune;

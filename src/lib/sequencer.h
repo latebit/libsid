@@ -6,9 +6,10 @@
 #include "tune.h"
 
 typedef enum { ATTACK, DECAY, SUSTAIN, RELEASE, DONE } EnvelopeState;
+extern const int ENVELOPE_RELEASE_SAMPLES;
 
-// Defines a volume envelope. Its value is between 0 and 1 where 0 is silence
-// and 1 is full volume associated with the Note being played
+// Defines a volume envelope. Its value is between 0 and 1 where 0 is
+// silence and 1 is full volume associated with the Note being played
 typedef struct {
   // How much volume to increase per sample in the attack phase
   float attackPerSample;
@@ -33,18 +34,14 @@ void stop(Envelope *e);
 float process(Envelope *e);
 
 typedef struct {
-  // The number of the current sample being played
+  // Keeps track of the current sample being played within a single tick
   int currentSample;
 
   // Keeps track of the index of the current note for each track
   int *currentNoteIndex;
 
-  // How many samples to play per beat
-  int samplesPerBeat;
-
-  // Used to wrap the current sample back to 0 so that we can loop the track
-  // indefinitely
-  int wrappingFactor;
+  // How many samples are there in a single tick
+  int samplesPerTick;
 
   // The tune to be played
   Tune *tune;

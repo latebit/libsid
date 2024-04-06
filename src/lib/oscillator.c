@@ -71,10 +71,11 @@ Oscillator *newOscillator(float frequency) {
   }
 
   Oscillator *o = malloc(sizeof(Oscillator));
-  *o = (Oscillator){.currentStep = 0,
-                    .stepSize = frequency / SAMPLE_RATE * WAVE_TABLE_SIZE,
-                    .volume = 0.5,
-                    .waveType = TRIANGLE};
+  o->currentStep = 0;
+  o->stepSize = frequency / SAMPLE_RATE * WAVE_TABLE_SIZE;
+  o->volume = 0.5;
+  o->waveType = TRIANGLE;
+  o->effect = NONE_EFFECT;
 
   return o;
 }

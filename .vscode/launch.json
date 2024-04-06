@@ -8,7 +8,7 @@
       "name": "Launch test using GDB",
       "type": "gdb",
       "request": "launch",
-      "target": "build/oscillator",
+      "target": "build/sequencer",
       "cwd": "${workspaceRoot}",
       "preLaunchTask": "CMake: build"
     },
