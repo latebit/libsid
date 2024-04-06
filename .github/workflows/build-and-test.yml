@@ -1,6 +1,4 @@
-# This starter workflow is for a CMake project running on multiple platforms. There is a different starter workflow if you just want a single platform.
-# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
-name: CMake on multiple platforms
+name: Build and test
 
 on:
   push:
@@ -13,12 +11,22 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     strategy:
-      # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
       fail-fast: false
 
       matrix:
         os: [ubuntu-latest, macos-13]
-        c_compiler: [clang]
+        c_compiler: [clang-15, clang]
+        build_type: [Release]
+        include:
+          - os: ubuntu-latest
+            c_compiler: clang-15
+          - os: macos-13
+            c_compiler: clang
+        exclude:
+          - os: ubuntu-latest
+            c_compiler: clang
+          - os: macos-13
+            c_compiler: clang-15
 
     steps:
     - uses: actions/checkout@v3
@@ -28,23 +36,22 @@ jobs:
       shell: bash
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-    
-    - uses: lukka/get-cmake@latest
-      with:
-        cmakeVersion: 3.22.1
 
     - uses: libsdl-org/setup-sdl@v1
       id: sdl
       with:
         install-linux-dependencies: true
         version: 2.30.2
+        add-to-environment: true
 
     - name: Configure CMake
       run: >
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
-        -DCMAKE_PREFIX_PATH=${{ steps.sdl.outputs.prefix }}
+        -DSDL2_DIR=${{ env.SDL2_ROOT }}
         -S ${{ github.workspace }}
+      env:
+        CC: ${{ matrix.c_compiler }}
 
     - name: Build
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }}
