@@ -1,5 +1,12 @@
 cmake_minimum_required(VERSION 3.22.1)
-project(sid VERSION 0.0.1 LANGUAGES C)
+
+if(DEFINED ENV{VERSION})
+  set(VERSION $ENV{VERSION})
+else()
+  set(VERSION "0.0.0")
+endif()
+
+project(sid VERSION ${VERSION} LANGUAGES C)
 
 set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -28,3 +35,21 @@ foreach(test_file ${TEST_SRC})
   target_link_libraries(${test_name} ${PROJECT_NAME})
   add_test(NAME ${test_name} COMMAND ${test_name})
 endforeach()
+
+install(TARGETS ${PROJECT_NAME} DESTINATION lib)
+install(FILES ${INCLUDE_FILES} DESTINATION include/${PROJECT_NAME})
+
+# Package with CPack
+set(CPACK_PACKAGE_VENDOR "Manuel Spagnolo")
+set(CPACK_PACKAGE_CONTACT "manuelspagnolo@duck.com")
+set(CPACK_PACKAGE_DESCRIPTION "A SID chip emulator.")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libsdl2-2.0-0")
+set(CPACK_PACKAGE_VERSION ${VERSION})
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+  set(CPACK_GENERATOR "DEB;TGZ")
+elseif (APPLE)
+  set(CPACK_GENERATOR "DragNDrop;TGZ")
+endif()
+
+include(CPack)
