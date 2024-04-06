@@ -3,59 +3,74 @@
 
 #include "oscillator.h"
 #include "track.h"
-
-#define TRACKS 3
+#include "tune.h"
 
 typedef enum { ATTACK, DECAY, SUSTAIN, RELEASE, DONE } EnvelopeState;
 
+// Defines a volume envelope. Its value is between 0 and 1 where 0 is silence
+// and 1 is full volume associated with the Note being played
 typedef struct {
+  // How much volume to increase per sample in the attack phase
   float attackPerSample;
+  // How much volume to decrease per sample in the decay phase
   float decayPerSample;
+  // The level of volume to sustain after the decay phase
   float sustainLevel;
+  // How much volume to decrease per sample in the release phase
   float releasePerSample;
+  // The current state of the envelope
   EnvelopeState state;
+  // The current value of the envelope
   float value;
 } Envelope;
 
+// Starts the given envelope
 void start(Envelope *e);
+// Initiates the release phase of the envelope
 void stop(Envelope *e);
-void process(Envelope *e);
+// Processes the envelope for the next sample and returns the value of the
+// envelope
+float process(Envelope *e);
 
 typedef struct {
   // The number of the current sample being played
   int currentSample;
 
-  // Keeps track of the current note for each track
-  int currentNote[TRACKS];
+  // Keeps track of the index of the current note for each track
+  int *currentNoteIndex;
 
-  // The number of ticks per beat
-  int subdivisions;
-
-  // The number of beats per minute
-  int bpm;
-
-  // The number of samples per beat
+  // How many samples to play per beat
   int samplesPerBeat;
 
   // Used to wrap the current sample back to 0 so that we can loop the track
   // indefinitely
   int wrappingFactor;
 
-  // The tracks to be played, they are owned by the Tune
-  Track *tracks[TRACKS];
+  // The tune to be played
+  Tune *tune;
 
   // The oscillators for each track
-  Oscillator *oscillators[TRACKS];
+  Oscillator **oscillators;
 
   // The envelopes for each track.
   // They are not customisable for now, we use them to have smooth transitions
   // across notes
-  Envelope *envelopes[TRACKS];
+  Envelope **envelopes;
 } Sequencer;
 
-Sequencer *newSequencer(int bpm, int subdivisions);
+// Creates a new sequencer with the given tune
+Sequencer *newSequencer(Tune *tune);
+
+// Sets the track at the given index and as sociates it with the given
+// oscillator
 void setTrack(Sequencer *s, int index, Track *t, Oscillator *o);
+
+// Returns the next sample for the given sequencer. It gets the next sample from
+// all the tracks, processes the envelopes and returns the average of all the
+// samples (i.e., the tracks are mixed equally)
 float getNextSampleForChannel(Sequencer *s);
+
+// Frees the memory associated with the given sequencer
 void freeSequencer(Sequencer *s);
 
 #endif

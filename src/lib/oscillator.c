@@ -148,4 +148,7 @@ float oscillate(Oscillator *o) {
   return processVolume(&o->effect, sample) * o->volume;
 }
 
-void freeOscillator(Oscillator *o) { free(o); }
+void freeOscillator(Oscillator *o) {
+  free(o);
+  o = NULL;
+}

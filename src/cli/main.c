@@ -7,7 +7,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "../lib/oscillator.h"
 #include "../lib/sequencer.h"
 #include "../parser/parser.h"
 
@@ -25,12 +24,7 @@ void callback(void *userdata, Uint8 *stream, int len) {
 
 void load(char *filename) {
   tune = fromFile(filename);
-  sequencer = newSequencer(tune->bpm, tune->ticksPerBeat);
-
-  for (int i = 0; i < tune->tracksCount; i++) {
-    Oscillator *oscillator = newOscillator(0);
-    setTrack(sequencer, i, tune->tracks[i], oscillator);
-  }
+  sequencer = newSequencer(tune);
 }
 
 int main(int argc, char *argv[]) {
@@ -60,14 +54,12 @@ int main(int argc, char *argv[]) {
   while (SDL_WaitEvent(&e)) {
     switch (e.type) {
     case SDL_QUIT:
-      freeTune(tune);
       freeSequencer(sequencer);
       return 0;
     }
   }
 
   freeSequencer(sequencer);
-  freeTune(tune);
 
   return 0;
 }

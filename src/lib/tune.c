@@ -7,6 +7,9 @@ void freeTune(Tune *c) {
     freeTrack(c->tracks[i]);
   }
   free(c->tracks);
+  c->tracks = NULL;
+  free(c);
+  c = NULL;
 }
 
 Tune *newTune(int tracksCount) {
