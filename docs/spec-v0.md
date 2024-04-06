@@ -142,7 +142,7 @@ The meaning of the characters by their zero-based index is the following
 |-------	|---------------------------------------------------------------------------	|-----------------------------------------------------------------	|-----------------	|
 | 0     	| Pitch, following the English naming convention.                           	| `A`, `B`, `C`, `D`, `E`, `F`, `G`                            	    | Rest (no sound) 	|
 | 1     	| Accidental, according to chromatic semitones.                             	| `b` (-1 semitone)<br>`#` (+1 semitone)                         	  | No accidentals  	|
-| 3     	| Octave, in Scientific Pitch Notation                                      	| `0-8`                                                          	  | `4`               |
+| 3     	| Octave, in Scientific Pitch Notation                                      	| `0-7`                                                          	  | `4`               |
 | 4     	| Waveform, the timbre of the note                                          	| `0` (triangle)<br>`1` (square)<br>`2` (sawtooth)<br>`3` (noise) 	| `0`    	          |
 | 5     	| Volume of the note in hexadecimal where 0 is silent and F maximum volume. 	| `0-F` (hexadecimal)                                            	  | `8`               |
 | 6     	| Effect applied to the note.                                               	| `0` (pitch down)<br>`1` (pitch up)<br>`2` (fade out)<br>`3` (fade in) | No effect     |

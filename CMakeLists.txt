@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.22.1)
 project(sid VERSION 0.0.1 LANGUAGES C)
 
 set(CMAKE_C_STANDARD 23)
@@ -14,10 +14,10 @@ file(GLOB LIB_SRC "${CMAKE_SOURCE_DIR}/src/lib/*.c")
 list(FILTER LIB_SRC EXCLUDE REGEX ".test.c$")
 
 add_executable(${PROJECT_NAME}-cli "${CMAKE_SOURCE_DIR}/src/cli/main.c" ${LIB_SRC} ${PARSER_SRC})
-target_link_libraries(${PROJECT_NAME}-cli SDL2)
+target_link_libraries(${PROJECT_NAME}-cli ${SDL2_LIBRARY})
 
 add_library(${PROJECT_NAME} SHARED ${LIB_SRC})
-target_link_libraries(${PROJECT_NAME} SDL2)
+target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY})
 
 enable_testing()
 

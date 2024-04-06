@@ -15,7 +15,7 @@ All the specifications present and future can be found [here](./docs/).
 ## Usage
 
 ```sh
-sid-cli path-to-tune
+sid-cli <path-to-tune-file>
 ```
 
 ## Development

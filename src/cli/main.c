@@ -7,23 +7,15 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "../lib/oscillator.h"
 #include "../lib/sequencer.h"
 #include "../parser/parser.h"
 
 Sequencer *sequencer;
 Tune *tune;
-int loaded = 0;
 
 void callback(void *userdata, Uint8 *stream, int len) {
   (void)userdata;
   int samples = len / sizeof(float);
-
-  if (loaded != 5) {
-    loaded++;
-    SDL_memset(stream, 0, len);
-    return;
-  }
 
   for (int i = 0; i < samples; i++) {
     ((float *)stream)[i] = getNextSampleForChannel(sequencer);
@@ -32,21 +24,18 @@ void callback(void *userdata, Uint8 *stream, int len) {
 
 void load(char *filename) {
   tune = fromFile(filename);
-  sequencer = newSequencer(tune->bpm, tune->ticksPerBeat);
-
-  for (int i = 0; i < tune->tracksCount; i++) {
-    Oscillator *oscillator = newOscillator(0);
-    setTrack(sequencer, i, tune->tracks[i], oscillator);
-  }
+  sequencer = newSequencer(tune);
 }
 
 int main(int argc, char *argv[]) {
-  if (0 != SDL_Init(SDL_INIT_AUDIO))
-    return 1;
-
   if (argc != 2) {
     char *name = basename(argv[0]);
     printf("Usage: %s <filename>\n", name);
+    exit(1);
+  }
+
+  if (0 != SDL_Init(SDL_INIT_AUDIO)) {
+    printf("SDL_Init: %s\n", SDL_GetError());
     exit(1);
   }
 
@@ -65,14 +54,12 @@ int main(int argc, char *argv[]) {
   while (SDL_WaitEvent(&e)) {
     switch (e.type) {
     case SDL_QUIT:
-      freeTune(tune);
       freeSequencer(sequencer);
       return 0;
     }
   }
 
   freeSequencer(sequencer);
-  freeTune(tune);
 
   return 0;
 }
