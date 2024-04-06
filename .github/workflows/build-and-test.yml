@@ -61,6 +61,11 @@ jobs:
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
       run: ctest --build-config ${{ matrix.build_type }}
 
+    - name: Package
+      if: startsWith(github.ref, 'refs/tags/')
+      working-directory: ${{ steps.strings.outputs.build-output-dir }}
+      run: cpack
+
     - name: Create Release
       if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v2
