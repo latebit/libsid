@@ -53,6 +53,7 @@ jobs:
         -S ${{ github.workspace }}
       env:
         CC: ${{ matrix.c_compiler }}
+        VERSION: ${{ github.ref_name }}
 
     - name: Build
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }}
