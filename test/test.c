@@ -59,9 +59,9 @@ void expectEqlString(char *a, char *b, char *name) {
   char msg[256 + strlen(a) + strlen(b) + 2];
   sprintf(msg, "Expected '%s' to equal '%s'", a, b);
   expect(a == b, name, msg);
-};
+}
 
 int report() {
   printf("\n%d assertions, %d failed\n", testCount, failedCount);
   return failedCount;
-};
+}

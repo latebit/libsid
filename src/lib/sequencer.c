@@ -9,7 +9,6 @@ void start(Envelope *e) { e->state = ATTACK; }
 void stop(Envelope *e) { e->state = RELEASE; }
 
 void process(Envelope *e) {
-  float result = 1;
   switch (e->state) {
   case ATTACK:
     e->value += e->attackPerSample;

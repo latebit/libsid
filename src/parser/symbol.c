@@ -46,22 +46,22 @@ Note parseStandardSymbol(char *str) {
                len, SYMBOL_SIZE);
 
   invalid +=
-      validate(str[0] >= 'A' && str[0] <= 'G' || str[0] == NULL_CHAR,
+      validate((str[0] >= 'A' && str[0] <= 'G') || str[0] == NULL_CHAR,
                "Invalid note. Got %c, expected one of A-G or -\n", str[0]);
   invalid += validate(
       str[1] == '#' || str[1] == 'b' || str[1] == NULL_CHAR,
       "Invalid accidental. Got %c, expected one of #, b, or -\n", str[1]);
   invalid +=
-      validate(str[2] >= '0' && str[2] <= '7' || str[2] == NULL_CHAR,
+      validate((str[2] >= '0' && str[2] <= '7') || str[2] == NULL_CHAR,
                "Invalid octave. Got %c, expected one of 0-7 or -\n", str[2]);
   invalid +=
-      validate(str[3] >= '0' && str[3] <= '3' || str[3] == NULL_CHAR,
+      validate((str[3] >= '0' && str[3] <= '3') || str[3] == NULL_CHAR,
                "Invalid wave. Got %c, expected one of 0-3 or -\n", str[3]);
   invalid +=
-      validate(str[4] >= '0' && str[4] <= 'F' || str[4] == NULL_CHAR,
+      validate((str[4] >= '0' && str[4] <= 'F') || str[4] == NULL_CHAR,
                "Invalid volume. Got %c, expected one of 0-F or -\n", str[4]);
   invalid +=
-      validate(str[5] >= '0' && str[5] <= '4' || str[5] == NULL_CHAR,
+      validate((str[5] >= '0' && str[5] <= '4') || str[5] == NULL_CHAR,
                "Invalid effect. Got %c, expected one of 0-4 or -\n", str[5]);
 
   if (invalid) {
@@ -73,74 +73,50 @@ Note parseStandardSymbol(char *str) {
   EffectType effect = NONE;
   WaveType wave = TRIANGLE;
 
-  switch (str[0]) {
-  case 'C':
+  if (str[0] == 'C') {
     note = 0;
-    break;
-  case 'D':
+  } else if (str[0] == 'D') {
     note = 2;
-    break;
-  case 'E':
+  } else if (str[0] == 'E') {
     note = 4;
-    break;
-  case 'F':
+  } else if (str[0] == 'F') {
     note = 5;
-    break;
-  case 'G':
+  } else if (str[0] == 'G') {
     note = 7;
-    break;
-  case 'A':
+  } else if (str[0] == 'A') {
     note = 9;
-    break;
-  case 'B':
+  } else if (str[0] == 'B') {
     note = 11;
-    break;
-  case NULL_CHAR:
+  } else if (str[0] == NULL_CHAR) {
     return newRest();
   }
 
-  switch (str[1]) {
-  case '#':
+  if (str[1] == '#') {
     note++;
-    break;
-  case 'b':
+  } else if (str[1] == 'b') {
     note--;
-    break;
   }
 
-  switch (str[3]) {
-  case '0':
-  case NULL_CHAR:
+  if (str[3] == '0' || str[3] == NULL_CHAR) {
     wave = TRIANGLE;
-    break;
-  case '1':
+  } else if (str[3] == '1') {
     wave = SAWTOOTH;
-    break;
-  case '2':
+  } else if (str[3] == '2') {
     wave = SQUARE;
-    break;
-  case '3':
+  } else if (str[3] == '3') {
     wave = NOISE;
-    break;
   }
 
-  switch (str[5]) {
-  case '0':
-  case NULL_CHAR:
+  if (str[5] == '0' || str[5] == NULL_CHAR) {
     effect = NONE;
-    break;
-  case '1':
+  } else if (str[5] == '1') {
     effect = DROP;
-    break;
-  case '2':
+  } else if (str[5] == '2') {
     effect = SLIDE;
-    break;
-  case '3':
+  } else if (str[5] == '3') {
     effect = FADEIN;
-    break;
-  case '4':
+  } else if (str[5] == '4') {
     effect = FADEOUT;
-    break;
   }
 
   int octave = str[2] == NULL_CHAR ? 4 : digitToInt(str[2]);

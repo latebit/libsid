@@ -41,12 +41,14 @@ void load(char *filename) {
 }
 
 int main(int argc, char *argv[]) {
-  if (0 != SDL_Init(SDL_INIT_AUDIO))
-    return 1;
-
   if (argc != 2) {
     char *name = basename(argv[0]);
     printf("Usage: %s <filename>\n", name);
+    exit(1);
+  }
+
+  if (0 != SDL_Init(SDL_INIT_AUDIO)) {
+    printf("SDL_Init: %s\n", SDL_GetError());
     exit(1);
   }
 
