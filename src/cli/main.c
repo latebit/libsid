@@ -7,11 +7,14 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "../lib/parser/error.h"
 #include "../lib/parser/parser.h"
 #include "../lib/synth/sequencer.h"
 
 Sequencer *sequencer;
 Tune *tune;
+
+const char *name = "sidplay";
 
 void callback(void *userdata, Uint8 *stream, int len) {
   (void)userdata;
@@ -22,24 +25,26 @@ void callback(void *userdata, Uint8 *stream, int len) {
   }
 }
 
-void load(char *filename) {
-  tune = fromFile(filename);
-  sequencer = newSequencer(tune);
-}
+void usage() { printf("Usage: %s <filename>\n", name); }
 
 int main(int argc, char *argv[]) {
   if (argc != 2) {
-    char *name = basename(argv[0]);
-    printf("Usage: %s <filename>\n", name);
-    exit(1);
+    usage();
+    return 1;
   }
 
   if (0 != SDL_Init(SDL_INIT_AUDIO)) {
-    printf("SDL_Init: %s\n", SDL_GetError());
-    exit(1);
+    error("Cannot initialize audio.");
+    return 1;
   }
 
-  load(argv[1]);
+  tune = fromFile(argv[1]);
+  if (tune == NULL) {
+    usage();
+    return 1;
+  }
+
+  sequencer = newSequencer(tune);
 
   SDL_AudioSpec spec = {.format = AUDIO_F32,
                         .channels = 1,
