@@ -40,7 +40,8 @@ endforeach()
 # Install targets (required by CPack)
 install(TARGETS ${BIN_NAME} DESTINATION bin)
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
-install(FILES ${LIB_HEADERS} DESTINATION include/${PROJECT_NAME})
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/src/lib/ DESTINATION include/${PROJECT_NAME}
+        FILES_MATCHING PATTERN "*.h")
 
 # Package with CPack
 set(CPACK_PACKAGE_VENDOR "Manuel Spagnolo")
