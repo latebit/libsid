@@ -1,7 +1,7 @@
 #ifndef TEST_H
 #define TEST_H
 
-#include "../src/lib/track.h"
+#include "../src/lib/synth/track.h"
 // Used for the test macro
 #include <stdio.h>
 

@@ -1,5 +1,5 @@
 #include "symbol.h"
-#include "../../test/test.h"
+#include "../../../test/test.h"
 #include <stdio.h>
 
 void alterations() {

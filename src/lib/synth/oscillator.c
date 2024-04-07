@@ -3,7 +3,7 @@
 #include "oscillator.h"
 #include "utils.h"
 
-const int WAVE_TABLE_SIZE = BUFFER_SIZE;
+static const int WAVE_TABLE_SIZE = BUFFER_SIZE;
 float waveTable[WAVES][BUFFER_SIZE];
 float NOTE_TO_FREQUENCY[96] = {
     16.35,   17.32,   18.35,   19.45,   20.60,   21.83,

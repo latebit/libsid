@@ -1,5 +1,5 @@
 #include "sequencer.h"
-#include "../../test/test.h"
+#include "../../../test/test.h"
 #include "track.h"
 #include "tune.h"
 

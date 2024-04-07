@@ -29,10 +29,10 @@ target_link_libraries(${PROJECT_NAME} SDL2::SDL2)
 
 enable_testing()
 
-file(GLOB TEST_SRC "${CMAKE_SOURCE_DIR}/src/*/*.test.c")
+file(GLOB TEST_SRC "${CMAKE_SOURCE_DIR}/src/**/**/*.test.c")
 foreach(test_file ${TEST_SRC})
   get_filename_component(test_name ${test_file} NAME_WE)
-  add_executable(${test_name} ${test_file} ${PARSER_SRC} "${CMAKE_SOURCE_DIR}/test/test.c")
+  add_executable(${test_name} ${test_file} "${CMAKE_SOURCE_DIR}/test/test.c")
   target_link_libraries(${test_name} ${PROJECT_NAME})
   add_test(NAME ${test_name} COMMAND ${test_name})
 endforeach()

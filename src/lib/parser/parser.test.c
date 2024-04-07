@@ -1,5 +1,5 @@
 #include "parser.h"
-#include "../../test/test.h"
+#include "../../../test/test.h"
 
 void simplest() {
   char *str =

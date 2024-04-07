@@ -45,6 +45,11 @@ Note parseStandardSymbol(char *str) {
       validate(len == SYMBOL_SIZE, "Invalid string size. Got %d, expected %d\n",
                len, SYMBOL_SIZE);
 
+  // Short-circuit to prevent out-of-bounds access
+  if (invalid) {
+    return newInvalid();
+  }
+
   invalid +=
       validate((str[0] >= 'A' && str[0] <= 'G') || str[0] == NULL_CHAR,
                "Invalid note. Got %c, expected one of A-G or -\n", str[0]);

@@ -1,5 +1,5 @@
 #include "track.h"
-#include "../../test/test.h"
+#include "../../../test/test.h"
 
 void notes() {
   Note n = newNote(48, 8, 0, 0);

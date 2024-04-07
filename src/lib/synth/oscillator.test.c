@@ -1,5 +1,5 @@
 #include "oscillator.h"
-#include "../../test/test.h"
+#include "../../../test/test.h"
 #include "utils.h"
 
 void init() {
