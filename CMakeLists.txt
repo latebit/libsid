@@ -41,7 +41,6 @@ endforeach()
 install(TARGETS ${BIN_NAME} DESTINATION bin)
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
 install(FILES ${LIB_HEADERS} DESTINATION include/${PROJECT_NAME})
-install(DIRECTORY ${SDL2_INCLUDE_DIRS} DESTINATION include)
 
 # Package with CPack
 set(CPACK_PACKAGE_VENDOR "Manuel Spagnolo")
