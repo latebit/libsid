@@ -16,7 +16,7 @@
       "name": "Launch using GDB",
       "type": "gdb",
       "request": "launch",
-      "target": "build/sid-cli",
+      "target": "build/sidplay",
       "arguments": "examples/example",
       "cwd": "${workspaceRoot}",
       "preLaunchTask": "CMake: build"
