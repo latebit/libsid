@@ -1,0 +1,82 @@
+name: Build and test
+
+on:
+  push:
+    branches: [ "main" ]
+    tags: [ '*' ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        os: [ubuntu-latest, macos-13]
+        c_compiler: [clang-15, clang]
+        build_type: [Release]
+        include:
+          - os: ubuntu-latest
+            c_compiler: clang-15
+          - os: macos-13
+            c_compiler: clang
+        exclude:
+          - os: ubuntu-latest
+            c_compiler: clang
+          - os: macos-13
+            c_compiler: clang-15
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set reusable strings
+      id: strings
+      shell: bash
+      run: |
+        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+
+    - name: "Fetch version from tag"
+      if: startsWith(github.ref, 'refs/tags/')
+      run: |
+        echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+
+
+    - uses: libsdl-org/setup-sdl@v1
+      id: sdl
+      with:
+        install-linux-dependencies: true
+        version: 2.30.2
+        add-to-environment: true
+
+    - name: Configure CMake
+      run: >
+        cmake -B ${{ steps.strings.outputs.build-output-dir }}
+        -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+        -DSDL2_DIR=${{ env.SDL2_ROOT }}
+        -S ${{ github.workspace }}
+      env:
+        CC: ${{ matrix.c_compiler }}
+
+    - name: Build
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }}
+
+    - name: Test
+      working-directory: ${{ steps.strings.outputs.build-output-dir }}
+      run: ctest --build-config ${{ matrix.build_type }}
+
+    - name: Package
+      if: startsWith(github.ref, 'refs/tags/')
+      working-directory: ${{ steps.strings.outputs.build-output-dir }}
+      run: cpack
+
+    - name: Create Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v2
+      with:
+        files: ${{ steps.strings.outputs.build-output-dir }}/sid-*
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag_name: ${{ github.ref_name }}
+        fail_on_unmatched_files: falsebuild
