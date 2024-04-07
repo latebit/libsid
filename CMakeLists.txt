@@ -37,6 +37,7 @@ foreach(test_file ${TEST_SRC})
   add_test(NAME ${test_name} COMMAND ${test_name})
 endforeach()
 
+# Install targets (required by CPack)
 install(TARGETS ${BIN_NAME} DESTINATION bin)
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
 install(FILES ${LIB_HEADERS} DESTINATION include/${PROJECT_NAME})
