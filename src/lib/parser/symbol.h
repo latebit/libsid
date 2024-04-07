@@ -1,4 +1,4 @@
-#include "../lib/track.h"
+#include "../synth/track.h"
 
 Note parseStandardSymbol(char *str);
 

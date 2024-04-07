@@ -11,17 +11,18 @@ project(sid VERSION ${VERSION} LANGUAGES C)
 set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_FLAGS_DEBUG "-g -fno-omit-frame-pointer -Wall -Wpedantic -fsanitize=address -gdwarf-2")
+
+set(BIN_NAME "${PROJECT_NAME}play")
 option(SDL2_PATH "Path to SDL2" $ENV{SDL2_PATH})
 
 find_package(SDL2 REQUIRED CONFIG)
 
-file(GLOB PARSER_SRC "${CMAKE_SOURCE_DIR}/src/parser/*.c")
-list(FILTER PARSER_SRC EXCLUDE REGEX ".test.c$")
-file(GLOB LIB_SRC "${CMAKE_SOURCE_DIR}/src/lib/*.c")
+file(GLOB LIB_SRC "${CMAKE_SOURCE_DIR}/src/lib/**/*.c")
 list(FILTER LIB_SRC EXCLUDE REGEX ".test.c$")
+file(GLOB LIB_HEADERS "${CMAKE_SOURCE_DIR}/src/lib/**/*.h")
 
-add_executable(${PROJECT_NAME}play "${CMAKE_SOURCE_DIR}/src/cli/main.c" ${LIB_SRC} ${PARSER_SRC})
-target_link_libraries(${PROJECT_NAME}play SDL2::SDL2-static)
+add_executable(${BIN_NAME} "${CMAKE_SOURCE_DIR}/src/cli/main.c" ${LIB_SRC})
+target_link_libraries(${BIN_NAME} SDL2::SDL2-static)
 
 add_library(${PROJECT_NAME} SHARED ${LIB_SRC})
 target_link_libraries(${PROJECT_NAME} SDL2::SDL2)
@@ -36,7 +37,10 @@ foreach(test_file ${TEST_SRC})
   add_test(NAME ${test_name} COMMAND ${test_name})
 endforeach()
 
-install(TARGETS ${PROJECT_NAME}play DESTINATION bin)
+install(TARGETS ${BIN_NAME} DESTINATION bin)
+install(TARGETS ${PROJECT_NAME} DESTINATION lib)
+install(FILES ${LIB_HEADERS} DESTINATION include/${PROJECT_NAME})
+install(DIRECTORY ${SDL2_INCLUDE_DIRS} DESTINATION include)
 
 # Package with CPack
 set(CPACK_PACKAGE_VENDOR "Manuel Spagnolo")

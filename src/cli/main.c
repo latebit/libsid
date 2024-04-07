@@ -7,8 +7,8 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "../lib/sequencer.h"
-#include "../parser/parser.h"
+#include "../lib/parser/parser.h"
+#include "../lib/synth/sequencer.h"
 
 Sequencer *sequencer;
 Tune *tune;

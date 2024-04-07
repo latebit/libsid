@@ -1,5 +1,5 @@
-#include "../lib/oscillator.h"
-#include "../lib/track.h"
+#include "../synth/oscillator.h"
+#include "../synth/track.h"
 #include "error.h"
 
 #include <stdarg.h>
