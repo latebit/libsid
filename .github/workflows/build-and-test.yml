@@ -38,6 +38,12 @@ jobs:
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
+    - name: "Fetch version from tag"
+      if: startsWith(github.ref, 'refs/tags/')
+      run: |
+        echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+
+
     - uses: libsdl-org/setup-sdl@v1
       id: sdl
       with:
@@ -53,7 +59,6 @@ jobs:
         -S ${{ github.workspace }}
       env:
         CC: ${{ matrix.c_compiler }}
-        VERSION: ${{ github.ref_name }}
 
     - name: Build
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }}
@@ -66,8 +71,6 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/')
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
       run: cpack
-      env:
-        VERSION: ${{ github.ref_name }}
 
     - name: Create Release
       if: startsWith(github.ref, 'refs/tags/')
