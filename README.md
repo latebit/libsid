@@ -6,17 +6,23 @@ A SID chip emulator to create chiptunes and sound effects.
 Originally developed for the [latebit](https://github.com/latebit/latebit-engine/) game
 engine.
 
+> [!WARNING]
+>
+> Until version 1.0.0 the API of the library and the CLI tool is to be considered unstable. Use at your own risk!s
+
+## Usage
+
+You can play a tune from the command line like
+
+```sh
+sidplay <path-to-tune-file>
+```
+
 ## Specification
 
 [LATEST SPECIFICATION](./docs/spec-v0.md)
 
 All the specifications present and future can be found [here](./docs/).
-
-## Usage
-
-```sh
-sidplay <path-to-tune-file>
-```
 
 ## Development
 
