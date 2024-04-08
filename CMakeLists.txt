@@ -49,11 +49,12 @@ set(CPACK_PACKAGE_CONTACT "manuelspagnolo@duck.com")
 set(CPACK_PACKAGE_DESCRIPTION "A SID chip emulator.")
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "libsdl2-2.0-0")
 set(CPACK_PACKAGE_VERSION ${VERSION})
+set(CPACK_BUNDLE_NAME ${BINARY_NAME})
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
   set(CPACK_GENERATOR "DEB;TGZ")
 elseif (APPLE)
-  set(CPACK_GENERATOR "DragNDrop;TGZ")
+  set(CPACK_GENERATOR "DragNDrop;TGZ;Bundle")
 endif()
 
 include(CPack)
