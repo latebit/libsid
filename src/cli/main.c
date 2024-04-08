@@ -44,7 +44,11 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  sequencer = newSequencer(tune);
+  sequencer = newSequencer();
+  if (0 != loadTune(sequencer, tune)) {
+    error("Cannot load tune.");
+    return 1;
+  }
 
   SDL_AudioSpec spec = {.format = AUDIO_F32,
                         .channels = 1,

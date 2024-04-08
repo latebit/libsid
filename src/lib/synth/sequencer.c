@@ -64,8 +64,10 @@ void setNote(Oscillator *o, Envelope *e, Note n) {
   start(e);
 }
 
-Sequencer *newSequencer(Tune *t) {
-  Sequencer *s = malloc(sizeof(Sequencer));
+int loadTune(Sequencer *s, Tune *t) {
+  if (s->tune)
+    return -1;
+
   s->tune = t;
   // Start currentSample at one else the first note will be skipped because the
   // currentSample is used to determine when to move to the next note.
@@ -73,9 +75,14 @@ Sequencer *newSequencer(Tune *t) {
   // getNextSampleForChannel)
   s->currentSample = 1;
   s->samplesPerTick = SAMPLE_RATE / (t->bpm * t->ticksPerBeat) * 60;
-  s->currentNoteIndex = malloc(sizeof(int) * t->tracksCount);
-  s->oscillators = malloc(sizeof(Oscillator *) * t->tracksCount);
-  s->envelopes = malloc(sizeof(Envelope *) * t->tracksCount);
+  s->currentNoteIndex =
+      realloc(s->currentNoteIndex, sizeof(int) * t->tracksCount);
+  s->oscillators =
+      realloc(s->oscillators, sizeof(Oscillator *) * t->tracksCount);
+  s->envelopes = realloc(s->envelopes, sizeof(Envelope *) * t->tracksCount);
+
+  if (!s->currentNoteIndex || !s->oscillators || !s->envelopes)
+    return -1;
 
   for (int i = 0; i < t->tracksCount; i++) {
     s->currentNoteIndex[i] = 0;
@@ -90,37 +97,63 @@ Sequencer *newSequencer(Tune *t) {
     }
   }
 
+  return 0;
+}
+
+Sequencer *newSequencer() {
+  Sequencer *s = malloc(sizeof(Sequencer));
+  s->tune = NULL;
+  s->currentSample = 0;
+  s->samplesPerTick = 0;
+  s->currentNoteIndex = malloc(sizeof(int));
+  s->oscillators = malloc(sizeof(Oscillator *));
+  s->envelopes = malloc(sizeof(Envelope *));
+
   return s;
+}
+
+int unloadTune(Sequencer *s) {
+  freeTune(s->tune);
+  s->tune = NULL;
+  s->currentSample = s->samplesPerTick = 0;
+  return 0;
 }
 
 void freeSequencer(Sequencer *s) {
   if (!s)
     return;
 
-  free(s->currentNoteIndex);
-  for (int i = 0; i < s->tune->tracksCount; i++) {
-    freeOscillator(s->oscillators[i]);
-    s->oscillators[i] = NULL;
+  if (s->tune) {
+    for (int i = 0; i < s->tune->tracksCount; i++) {
+      freeOscillator(s->oscillators[i]);
+      s->oscillators[i] = NULL;
 
-    free(s->envelopes[i]);
-    s->envelopes[i] = NULL;
+      free(s->envelopes[i]);
+      s->envelopes[i] = NULL;
+    }
+    freeTune(s->tune);
+    s->tune = NULL;
   }
+
+  free(s->currentNoteIndex);
   free(s->oscillators);
   s->oscillators = NULL;
   free(s->envelopes);
   s->envelopes = NULL;
-  freeTune(s->tune);
-  s->tune = NULL;
   free(s);
   s = NULL;
 }
 
 float getNextSampleForChannel(Sequencer *s) {
+  if (!s->tune)
+    return 0;
+
   int shouldMoveToNextNote = s->currentSample % s->samplesPerTick == 0;
   int shouldStopEnvelope =
       (s->currentSample + ENVELOPE_RELEASE_SAMPLES) % s->samplesPerTick == 0;
   float result = 0;
 
+  // Plays the current sample in every channel
   for (int channel = 0; channel < s->tune->tracksCount; channel++) {
     Track *track = s->tune->tracks[channel];
     Envelope *envelope = s->envelopes[channel];

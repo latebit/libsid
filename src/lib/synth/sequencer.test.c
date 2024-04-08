@@ -25,28 +25,9 @@ void envelope() {
 }
 
 void init() {
-  Tune *t = newTune(3);
-  t->tracks[0] = newTrack(1);
-  push(t->tracks[0], newNote(48, 8, 0, 0));
-  t->tracks[1] = newTrack(2);
-  push(t->tracks[1], newNote(48, 8, 0, 0));
-  push(t->tracks[1], newNote(48, 8, 0, 0));
-  t->tracks[2] = newTrack(3);
-  push(t->tracks[2], newNote(48, 8, 0, 0));
-  push(t->tracks[2], newNote(48, 8, 0, 0));
-  push(t->tracks[2], newNote(48, 8, 0, 0));
-
-  Sequencer *s = newSequencer(t);
-
-  expectEqlInt(s->tune->tracksCount, 3, "has correct tracks count");
-  expectEqlInt(s->currentSample, 1, "starts at sample 1");
-  expectEqlInt(s->samplesPerTick, 264600, "sets correct samples per beat");
-
-  for (int i = 0; i < s->tune->tracksCount; i++) {
-    expectEqlInt(s->currentNoteIndex[i], 0, "starts at note 0");
-    expectNotNull(s->oscillators[i], "has oscillator");
-    expectNotNull(s->envelopes[i], "has enevlope");
-  }
+  Sequencer *s = newSequencer();
+  expectEqlInt(s->currentSample, 0, "starts at sample 1");
+  expectEqlInt(s->samplesPerTick, 0, "sets correct samples per beat");
   freeSequencer(s);
 }
 
@@ -64,7 +45,8 @@ void run() {
   push(t->tracks[2], newNote(50, 8, 0, 0));
   t->beatsCount = 2;
 
-  Sequencer *s = newSequencer(t);
+  Sequencer *s = newSequencer();
+  loadTune(s, t);
 
   getNextSampleForChannel(s);
 

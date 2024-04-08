@@ -2,7 +2,6 @@
 #define SEQUENCER_H
 
 #include "oscillator.h"
-#include "track.h"
 #include "tune.h"
 
 typedef enum { ATTACK, DECAY, SUSTAIN, RELEASE, DONE } EnvelopeState;
@@ -55,16 +54,22 @@ typedef struct {
   Envelope **envelopes;
 } Sequencer;
 
-// Creates a new sequencer with the given tune
-Sequencer *newSequencer(Tune *tune);
+// Creates a new sequencer
+Sequencer *newSequencer();
 
-// Sets the track at the given index and as sociates it with the given
-// oscillator
-void setTrack(Sequencer *s, int index, Track *t, Oscillator *o);
+// Loads the given tune in the sequencer, allocating all the necessary envelopes
+// and oscillators. If a tune has been loaded before, you need to call
+// unloadTune first. Returns -1 for failure.
+int loadTune(Sequencer *s, Tune *t);
 
-// Returns the next sample for the given sequencer. It gets the next sample from
-// all the tracks, processes the envelopes and returns the average of all the
-// samples (i.e., the tracks are mixed equally)
+// Unloads the current tune and frees the resources associated with it. It
+// doesn't change oscillators and envelopes though, as they will be
+// reinitialised in the next loadTune call.
+int unloadTune(Sequencer *s);
+
+// Returns the next sample for the given sequencer. It gets the next sample
+// from all the tracks, processes the envelopes and returns the average of all
+// the samples (i.e., the tracks are mixed equally)
 float getNextSampleForChannel(Sequencer *s);
 
 // Frees the memory associated with the given sequencer
