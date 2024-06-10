@@ -1,5 +1,9 @@
+
 libsid
 ===
+
+# Archived and moved [here](https://github.com/latebit/latebit-engine/tree/main/latebit/sid)
+
 
 A SID chip emulator to create chiptunes and sound effects. 
 
