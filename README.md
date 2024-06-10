@@ -1,9 +1,11 @@
+<center>
+<h1>
+⚠️⚠️⚠️ Merged with <a href="https://github.com/latebit/latebit-engine/tree/main/latebit/sid">latebit</a> ⚠️⚠️⚠️
+</h1>
+</center>
 
 libsid
 ===
-
-# Archived and moved [here](https://github.com/latebit/latebit-engine/tree/main/latebit/sid)
-
 
 A SID chip emulator to create chiptunes and sound effects. 
 
